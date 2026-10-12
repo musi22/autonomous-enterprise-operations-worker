@@ -299,3 +299,62 @@ class BenchmarkMetric(Base):
     diff_pct = Column(Float, nullable=False)
 
     benchmark = relationship("BenchmarkRun", back_populates="metrics")
+
+
+class Invoice(Base):
+    __tablename__ = "invoices"
+
+    id = Column(String(64), primary_key=True, default=generate_uuid)
+    invoice_number = Column(String(64), unique=True, nullable=False, index=True)
+    vendor = Column(String(128), nullable=False, index=True)
+    amount = Column(Float, nullable=False)
+    currency = Column(String(16), nullable=False, default="INR")
+    invoice_date = Column(String(32), nullable=False)
+    due_date = Column(String(32), nullable=False)
+    status = Column(String(32), nullable=False, default="UNPAID")  # UNPAID, PAID, CANCELLED
+    file_path = Column(String(255), nullable=True)
+    raw_content = Column(Text, nullable=True)
+    metadata_json = Column(JSON, nullable=True)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+
+
+class FinanceRecord(Base):
+    __tablename__ = "finance_records"
+
+    id = Column(String(64), primary_key=True, default=generate_uuid)
+    record_number = Column(String(64), unique=True, nullable=False, index=True)  # e.g. FIN-82914
+    invoice_number = Column(String(64), nullable=False, index=True)
+    vendor = Column(String(128), nullable=False, index=True)
+    amount = Column(Float, nullable=False)
+    currency = Column(String(16), nullable=False, default="INR")
+    due_date = Column(String(32), nullable=False)
+    status = Column(String(32), nullable=False, default="ENTERED")  # ENTERED, VERIFIED, PAID
+    idempotency_key = Column(String(128), unique=True, nullable=False, index=True)
+    source = Column(String(64), default="autonomous_worker")
+    task_id = Column(String(64), nullable=True, index=True)
+    metadata_json = Column(JSON, nullable=True)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+
+
+class EnterpriseTask(Base):
+    __tablename__ = "enterprise_tasks"
+
+    id = Column(String(64), primary_key=True, default=generate_uuid)
+    user_goal = Column(Text, nullable=False)
+    interpreted_goal = Column(Text, nullable=True)
+    plan_json = Column(JSON, nullable=True)
+    current_step = Column(Integer, nullable=False, default=0)
+    status = Column(String(32), nullable=False, default="PENDING")  # PENDING, RUNNING, WAITING_APPROVAL, SUCCESS, FAILED, ESCALATED
+    memory_json = Column(JSON, nullable=True)
+    extracted_entities_json = Column(JSON, nullable=True)
+    risk_level = Column(String(32), nullable=False, default="LOW")
+    approval_id = Column(String(64), nullable=True)
+    approval_status = Column(String(32), nullable=True)  # NONE, PENDING, APPROVED, REJECTED
+    retry_count = Column(Integer, nullable=False, default=0)
+    errors_json = Column(JSON, nullable=True)
+    verification_status = Column(String(32), nullable=False, default="NONE")  # NONE, PASSED, FAILED
+    verification_details_json = Column(JSON, nullable=True)
+    evidence_receipt_id = Column(String(64), nullable=True)
+    final_summary = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+    updated_at = Column(DateTime, default=utc_now, onupdate=utc_now, nullable=False)

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { 
+  Bot,
   ShieldCheck, 
   Activity, 
   FlaskConical, 
@@ -21,6 +22,7 @@ interface HeaderProps {
 
 export const ConsoleHeader: React.FC<HeaderProps> = ({ activeTab, setActiveTab, gatePassed, providerMode }) => {
   const navItems = [
+    { id: "worker", label: "Autonomous Worker", icon: Bot },
     { id: "overview", label: "Overview", icon: Activity },
     { id: "scenarios", label: "Scenario Lab", icon: FlaskConical },
     { id: "traces", label: "Trace Explorer", icon: GitCommit },
@@ -36,22 +38,23 @@ export const ConsoleHeader: React.FC<HeaderProps> = ({ activeTab, setActiveTab, 
           {/* Logo & Title */}
           <div className="flex items-center space-x-3">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-              <ShieldCheck className="w-5 h-5 text-white" />
+              <Bot className="w-5 h-5 text-white animate-pulse" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <span className="font-semibold text-slate-100 text-sm tracking-wide">
-                  Agentic Commerce Reliability & Recovery Lab
+                  Autonomous Enterprise Operations Worker
                 </span>
                 <span className="text-[10px] font-mono uppercase bg-cyan-950 text-cyan-400 border border-cyan-800 px-1.5 py-0.5 rounded">
-                  v1.0.0
+                  v2.0-autonomous
                 </span>
               </div>
               <p className="text-[11px] text-slate-400">
-                Enterprise Agent Trust & Evaluation Platform (Amazon-Inspired Retail Sandbox)
+                AI Employee Platform — Autonomous Planning, Execution, Retries, Policy, and Independent Verification
               </p>
             </div>
           </div>
+
 
           {/* Release Gate Pill */}
           <div className="hidden md:flex items-center space-x-2">

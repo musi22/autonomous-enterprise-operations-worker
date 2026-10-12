@@ -7,7 +7,8 @@ from packages.policies.rules import (
     ResourceOwnershipRule,
     OrderStateTransitionRule,
     RefundThresholdApprovalRule,
-    IdempotencyKeyPresenceRule
+    IdempotencyKeyPresenceRule,
+    HighValueInvoiceApprovalRule
 )
 
 class PolicyEngine:
@@ -19,7 +20,9 @@ class PolicyEngine:
             OrderStateTransitionRule(),
             RefundThresholdApprovalRule(),
             IdempotencyKeyPresenceRule(),
+            HighValueInvoiceApprovalRule(),
         ]
+
 
     def evaluate(self, ctx: PolicyContext) -> PolicyEvaluationResult:
         """

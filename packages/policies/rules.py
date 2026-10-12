@@ -45,7 +45,35 @@ ROLE_ALLOWED_TOOLS = {
         "escalate_to_human",
         "admin_adjust_inventory",
         "admin_override_refund",
-        "admin_delete_order"
+        "admin_delete_order",
+        "search_company_files",
+        "list_invoices",
+        "read_invoice",
+        "extract_invoice_fields",
+        "search_vendor",
+        "finance_find_invoice",
+        "finance_create_invoice",
+        "finance_get_invoice",
+        "browser_navigate",
+        "browser_type",
+        "browser_click",
+        "browser_read",
+        "request_human_approval"
+    },
+    "enterprise_worker": {
+        "search_company_files",
+        "list_invoices",
+        "read_invoice",
+        "extract_invoice_fields",
+        "search_vendor",
+        "finance_find_invoice",
+        "finance_create_invoice",
+        "finance_get_invoice",
+        "browser_navigate",
+        "browser_type",
+        "browser_click",
+        "browser_read",
+        "request_human_approval"
     }
 }
 
@@ -55,8 +83,10 @@ WRITE_TOOLS = {
     "cancel_order",
     "request_refund",
     "admin_adjust_inventory",
-    "admin_override_refund"
+    "admin_override_refund",
+    "finance_create_invoice"
 }
+
 
 PROMPT_INJECTION_PATTERNS = [
     re.compile(r"(?i)\bignore\s+(?:all\s+)?(?:previous\s+)?instructions\b"),
@@ -196,3 +226,24 @@ class IdempotencyKeyPresenceRule(BasePolicyRule):
                     suggested_action="Supply a unique UUID v4 idempotency key before submitting write operations."
                 )
         return None
+
+
+class HighValueInvoiceApprovalRule(BasePolicyRule):
+    rule_name = "high_value_invoice_approval"
+
+    def evaluate(self, ctx: PolicyContext) -> Optional[PolicyEvaluationResult]:
+        if ctx.tool_name == "finance_create_invoice":
+            amount = ctx.tool_arguments.get("amount", 0.0)
+            # Default threshold: ₹100,000. Can also be overridden in session metadata or user query policy
+            meta = ctx.session_metadata or {}
+            threshold = meta.get("max_approval_threshold", 100000.0)
+            if amount > threshold:
+                return PolicyEvaluationResult(
+                    decision=PolicyDecisionEnum.REQUIRE_APPROVAL,
+                    rule_name=self.rule_name,
+                    reason=f"Invoice payable amount (₹{amount:,.2f}) exceeds autonomous write threshold (₹{threshold:,.2f}). Human manager authorization required.",
+                    suggested_action="Pause execution, register Approval Inbox item, and await human authorization.",
+                    escalation_required=True
+                )
+        return None
+

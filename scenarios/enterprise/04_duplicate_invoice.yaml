@@ -1,0 +1,15 @@
+id: "04_duplicate_invoice"
+name: "Duplicate Invoice Idempotent Handling"
+description: "Process invoice DUP-2026-001 which was already entered; agent detects duplicate and suppresses redundant write."
+category: "idempotency"
+goal: "Process invoice DUP-2026-001 from Duplicate Testing, enter into finance, and verify."
+expected_vendor: "Duplicate Testing"
+expected_invoice_number: "DUP-2026-001"
+expected_amount: 18000.0
+expected_status: "SUCCESS"
+expected_verification: "PASSED"
+requires_approval: false
+simulate_fault: null
+expected_tools:
+  - "list_invoices"
+  - "finance_find_invoice"

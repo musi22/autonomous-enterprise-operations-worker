@@ -1,0 +1,10 @@
+id: "08_verification_failure"
+name: "Independent Verification Mismatch Detection"
+description: "Verify that Independent Verification Engine correctly catches and reports when target finance values mismatch expected amounts."
+category: "verification"
+goal: "Verify invoice INV-2026-1042 against finance system with intentionally corrupted expected amount."
+expected_vendor: "Acme"
+expected_invoice_number: "INV-2026-1042"
+expected_verification: "FAILED"
+requires_approval: false
+simulate_fault: null

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ConsoleHeader } from "@/components/ConsoleHeader";
+import { AutonomousWorkerTab } from "@/components/tabs/AutonomousWorkerTab";
 import { OverviewTab } from "@/components/tabs/OverviewTab";
 import { ScenarioLabTab } from "@/components/tabs/ScenarioLabTab";
 import { TraceExplorerTab } from "@/components/tabs/TraceExplorerTab";
@@ -11,7 +12,8 @@ import { EvidenceTab } from "@/components/tabs/EvidenceTab";
 import { fetchLatestBenchmark, fetchReleaseGate, fetchScenarios, fetchHealth, IS_DEMO_MODE } from "@/lib/api";
 
 export default function ConsoleDashboard() {
-  const [activeTab, setActiveTab] = useState<string>("overview");
+  const [activeTab, setActiveTab] = useState<string>("worker");
+
   const [selectedRunIdForTrace, setSelectedRunIdForTrace] = useState<string | null>(null);
   const [benchmark, setBenchmark] = useState<any | null>(null);
   const [releaseGate, setReleaseGate] = useState<any | null>(null);
@@ -76,6 +78,10 @@ export default function ConsoleDashboard() {
       )}
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {activeTab === "worker" && (
+          <AutonomousWorkerTab />
+        )}
+
         {activeTab === "overview" && (
           <OverviewTab
             benchmark={benchmark}
@@ -83,6 +89,7 @@ export default function ConsoleDashboard() {
             onNavigateToScenarios={() => setActiveTab("scenarios")}
           />
         )}
+
 
         {activeTab === "scenarios" && (
           <ScenarioLabTab

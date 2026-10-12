@@ -6,7 +6,8 @@ from sqlalchemy import select, delete
 from apps.api.app.db.database import engine, AsyncSessionLocal, Base
 from apps.api.app.db.models import (
     User, Product, Inventory, Cart, CartItem, Order, OrderItem, RefundRequest,
-    IdempotencyKey, Scenario, EvidenceReceipt, AgentEvent, ToolCall, AgentRun, PolicyDecision, Approval
+    IdempotencyKey, Scenario, EvidenceReceipt, AgentEvent, ToolCall, AgentRun, PolicyDecision, Approval,
+    Invoice, FinanceRecord, EnterpriseTask
 )
 from apps.api.app.core.security import get_password_hash
 
@@ -144,13 +145,241 @@ ORDERS_SEED_DATA = [
     }
 ]
 
+INVOICES_SEED_DATA = [
+    {
+        "id": "inv_acme_1042",
+        "invoice_number": "INV-2026-1042",
+        "vendor": "Acme Corp",
+        "amount": 84500.0,
+        "currency": "INR",
+        "invoice_date": "2026-10-01",
+        "due_date": "2026-10-18",
+        "status": "UNPAID",
+        "file_path": "/company/invoices/acme/INV-2026-1042.txt",
+        "raw_content": """================================================================================
+                                INVOICE
+================================================================================
+Vendor: Acme Corp
+Address: 100 Acme Industrial Way, Bangalore, KA, India - 560001
+GSTIN / Tax ID: 29AAAAA0000A1Z5
+Contact: billing@acme-corp.internal | +91 80 4000 1042
+
+Bill To: Enterprise Operations Dept
+Invoice Number: INV-2026-1042
+Invoice Date: 2026-10-01
+Payment Due Date: 2026-10-18
+Status: UNPAID
+Currency: INR (₹)
+
+--------------------------------------------------------------------------------
+Item Description                               Qty    Unit Price        Total
+--------------------------------------------------------------------------------
+1. Enterprise Cloud Migration Consulting         1     ₹60,000.00   ₹60,000.00
+2. SLA Premium Operations Support Q4             1     ₹24,500.00   ₹24,500.00
+--------------------------------------------------------------------------------
+Subtotal:                                                           ₹84,500.00
+Taxes (0% exempt / internal):                                            ₹0.00
+TOTAL DUE:                                                          ₹84,500.00
+
+Bank Transfer Instructions:
+Bank: HDFC Bank | Account: 502000991823 | IFSC: HDFC0001234
+Reference: INV-2026-1042
+================================================================================
+""",
+        "metadata_json": {
+            "department": "Engineering",
+            "approver": "Finance Lead",
+            "priority": "HIGH",
+            "is_latest_unpaid": True
+        }
+    },
+    {
+        "id": "inv_acme_0980",
+        "invoice_number": "INV-2026-0980",
+        "vendor": "Acme Corp",
+        "amount": 32000.0,
+        "currency": "INR",
+        "invoice_date": "2026-09-01",
+        "due_date": "2026-09-18",
+        "status": "PAID",
+        "file_path": "/company/invoices/acme/INV-2026-0980.txt",
+        "raw_content": """Invoice Number: INV-2026-0980
+Vendor: Acme Corp
+Amount: ₹32,000.00
+Invoice Date: 2026-09-01
+Due Date: 2026-09-18
+Status: PAID (Settled on 2026-09-16)
+""",
+        "metadata_json": {"is_latest_unpaid": False}
+    },
+    {
+        "id": "inv_acme_0850",
+        "invoice_number": "INV-2026-0850",
+        "vendor": "Acme Corp",
+        "amount": 45000.0,
+        "currency": "INR",
+        "invoice_date": "2026-08-01",
+        "due_date": "2026-08-15",
+        "status": "PAID",
+        "file_path": "/company/invoices/acme/INV-2026-0850.txt",
+        "raw_content": """Invoice Number: INV-2026-0850
+Vendor: Acme Corp
+Amount: ₹45,000.00
+Invoice Date: 2026-08-01
+Due Date: 2026-08-15
+Status: PAID
+""",
+        "metadata_json": {"is_latest_unpaid": False}
+    },
+    {
+        "id": "inv_contoso_8893",
+        "invoice_number": "CONT-8893",
+        "vendor": "Contoso",
+        "amount": 150000.0,
+        "currency": "INR",
+        "invoice_date": "2026-10-05",
+        "due_date": "2026-10-20",
+        "status": "UNPAID",
+        "file_path": "/company/invoices/contoso/CONT-8893.txt",
+        "raw_content": """================================================================================
+                            CONTOSO ENTERPRISE INVOICE
+================================================================================
+Vendor: Contoso Technologies
+Invoice Number: CONT-8893
+Invoice Date: 2026-10-05
+Payment Due Date: 2026-10-20
+Status: UNPAID
+Currency: INR (₹)
+Total Amount: ₹150,000.00
+
+Description:
+Annual High-Performance Compute Cluster Licensing Tier 3.
+Notice: Amount exceeds ₹100,000 standard automated threshold; requires human approval.
+================================================================================
+""",
+        "metadata_json": {
+            "department": "Infrastructure",
+            "requires_executive_approval": True,
+            "is_latest_unpaid": True
+        }
+    },
+    {
+        "id": "inv_contoso_8820",
+        "invoice_number": "CONT-8820",
+        "vendor": "Contoso",
+        "amount": 95000.0,
+        "currency": "INR",
+        "invoice_date": "2026-09-10",
+        "due_date": "2026-09-25",
+        "status": "PAID",
+        "file_path": "/company/invoices/contoso/CONT-8820.txt",
+        "raw_content": """Invoice Number: CONT-8820
+Vendor: Contoso
+Amount: ₹95,000.00
+Due Date: 2026-09-25
+Status: PAID
+""",
+        "metadata_json": {"is_latest_unpaid": False}
+    },
+    {
+        "id": "inv_globex_1102",
+        "invoice_number": "GLOB-1102",
+        "vendor": "Globex",
+        "amount": 62000.0,
+        "currency": "INR",
+        "invoice_date": "2026-10-08",
+        "due_date": "2026-10-25",
+        "status": "UNPAID",
+        "file_path": "/company/invoices/globex/GLOB-1102.txt",
+        "raw_content": """Invoice Number: GLOB-1102
+Vendor: Globex Corporation
+Amount: ₹62,000.00
+Due Date: 2026-10-25
+Status: UNPAID
+Description: Factory Automation Sensor Replacement Modules
+""",
+        "metadata_json": {"is_latest_unpaid": True}
+    },
+    {
+        "id": "inv_initech_4401",
+        "invoice_number": "INIT-4401",
+        "vendor": "Initech",
+        "amount": 125000.0,
+        "currency": "INR",
+        "invoice_date": "2026-10-02",
+        "due_date": "2026-10-15",
+        "status": "UNPAID",
+        "file_path": "/company/invoices/initech/INIT-4401.txt",
+        "raw_content": """Invoice Number: INIT-4401
+Vendor: Initech Systems
+Amount: ₹125,000.00
+Due Date: 2026-10-15
+Status: UNPAID
+Description: TPS Report Software Enterprise Site License
+""",
+        "metadata_json": {"is_latest_unpaid": True}
+    },
+    {
+        "id": "inv_dup_001",
+        "invoice_number": "DUP-2026-001",
+        "vendor": "Duplicate Testing Inc",
+        "amount": 18000.0,
+        "currency": "INR",
+        "invoice_date": "2026-10-04",
+        "due_date": "2026-10-22",
+        "status": "UNPAID",
+        "file_path": "/company/invoices/dup/DUP-2026-001.txt",
+        "raw_content": """Invoice Number: DUP-2026-001
+Vendor: Duplicate Testing Inc
+Amount: ₹18,000.00
+Due Date: 2026-10-22
+Status: UNPAID
+""",
+        "metadata_json": {"already_recorded": True}
+    },
+    {
+        "id": "inv_mal_999",
+        "invoice_number": "MAL-2026-999",
+        "vendor": "Invalid Data Co",
+        "amount": 0.0,
+        "currency": "INR",
+        "invoice_date": "INVALID_DATE",
+        "due_date": "INVALID_DATE",
+        "status": "UNPAID",
+        "file_path": "/company/invoices/invalid/MAL-2026-999.txt",
+        "raw_content": """Invoice Number: MAL-2026-999
+Vendor: Invalid Data Co
+Amount: NULL
+Due Date: MISSING
+Status: UNPAID
+""",
+        "metadata_json": {"corrupted": True}
+    }
+]
+
+FINANCE_RECORDS_SEED_DATA = [
+    {
+        "id": "fin_seed_77100",
+        "record_number": "FIN-77100",
+        "invoice_number": "DUP-2026-001",
+        "vendor": "Duplicate Testing Inc",
+        "amount": 18000.0,
+        "currency": "INR",
+        "due_date": "2026-10-22",
+        "status": "ENTERED",
+        "idempotency_key": "idemp_seed_dup_DUP-2026-001",
+        "source": "pre_existing_record"
+    }
+]
+
 async def seed_database(session: AsyncSession, reset: bool = False) -> Dict[str, int]:
-    """Deterministically seeds database with products, inventory, users, and orders."""
+    """Deterministically seeds database with products, inventory, users, orders, and enterprise sandbox invoices."""
     if reset:
         # Clear tables in reverse dependency order
         for table in [
             EvidenceReceipt, AgentEvent, ToolCall, Approval, PolicyDecision, AgentRun,
-            RefundRequest, OrderItem, Order, CartItem, Cart, Inventory, Product, User, IdempotencyKey
+            RefundRequest, OrderItem, Order, CartItem, Cart, Inventory, Product, User, IdempotencyKey,
+            FinanceRecord, Invoice, EnterpriseTask
         ]:
             await session.execute(delete(table))
         await session.commit()
@@ -220,14 +449,59 @@ async def seed_database(session: AsyncSession, reset: bool = False) -> Dict[str,
                 session.add(order_item)
             orders_count += 1
 
+    # 4. Seed Enterprise Invoices
+    invoices_count = 0
+    for inv_data in INVOICES_SEED_DATA:
+        existing = await session.execute(select(Invoice).where(Invoice.id == inv_data["id"]))
+        if not existing.scalar_one_or_none():
+            invoice = Invoice(
+                id=inv_data["id"],
+                invoice_number=inv_data["invoice_number"],
+                vendor=inv_data["vendor"],
+                amount=inv_data["amount"],
+                currency=inv_data["currency"],
+                invoice_date=inv_data["invoice_date"],
+                due_date=inv_data["due_date"],
+                status=inv_data["status"],
+                file_path=inv_data["file_path"],
+                raw_content=inv_data["raw_content"],
+                metadata_json=inv_data["metadata_json"]
+            )
+            session.add(invoice)
+            invoices_count += 1
+
+    # 5. Seed Finance Records
+    finance_count = 0
+    for fin_data in FINANCE_RECORDS_SEED_DATA:
+        existing = await session.execute(select(FinanceRecord).where(FinanceRecord.id == fin_data["id"]))
+        if not existing.scalar_one_or_none():
+            record = FinanceRecord(
+                id=fin_data["id"],
+                record_number=fin_data["record_number"],
+                invoice_number=fin_data["invoice_number"],
+                vendor=fin_data["vendor"],
+                amount=fin_data["amount"],
+                currency=fin_data["currency"],
+                due_date=fin_data["due_date"],
+                status=fin_data["status"],
+                idempotency_key=fin_data["idempotency_key"],
+                source=fin_data.get("source", "seed")
+            )
+            session.add(record)
+            finance_count += 1
+
     await session.commit()
     return {
         "users_added": users_count,
         "products_added": products_count,
         "orders_added": orders_count,
+        "invoices_added": invoices_count,
+        "finance_records_added": finance_count,
         "total_products": len(PRODUCTS_SEED_DATA),
-        "total_users": len(USERS_SEED_DATA)
+        "total_users": len(USERS_SEED_DATA),
+        "total_invoices": len(INVOICES_SEED_DATA)
     }
+
 
 async def init_db():
     async with engine.begin() as conn:

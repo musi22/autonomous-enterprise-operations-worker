@@ -12,6 +12,9 @@ from apps.api.app.api.v1.routers.approvals import router as approvals_router
 from apps.api.app.api.v1.routers.evidence import router as evidence_router
 from apps.api.app.api.v1.routers.scenarios import router as scenarios_router
 from apps.api.app.api.v1.routers.admin import router as admin_router
+from apps.api.app.api.v1.routers.finance_sandbox import router as finance_sandbox_router
+from apps.api.app.api.v1.routers.tasks import router as tasks_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -45,14 +48,20 @@ app.add_middleware(
 app.include_router(health_router)
 app.include_router(health_router, prefix=settings.API_V1_PREFIX)
 
+# Mount Sandbox portal at root and API v1
+app.include_router(finance_sandbox_router)
+
 # Mount API v1 Feature Routers
 app.include_router(runs_router, prefix=settings.API_V1_PREFIX)
+app.include_router(tasks_router, prefix=settings.API_V1_PREFIX)
 app.include_router(eval_router, prefix=settings.API_V1_PREFIX)
 app.include_router(policies_router, prefix=settings.API_V1_PREFIX)
 app.include_router(approvals_router, prefix=settings.API_V1_PREFIX)
 app.include_router(evidence_router, prefix=settings.API_V1_PREFIX)
 app.include_router(scenarios_router, prefix=settings.API_V1_PREFIX)
 app.include_router(admin_router, prefix=settings.API_V1_PREFIX)
+
+
 
 @app.get("/")
 async def root():

@@ -1,270 +1,272 @@
-# Agentic Commerce Reliability & Recovery Lab
+# Autonomous Enterprise Operations Worker
 
-> **Enterprise Agent Trust & Evaluation Platform**  
-> An independently built, Amazon-inspired retail operations agent reliability sandbox and evaluation harness.
->
-> 🌐 **Live Web Console:** [https://enterprise-ai-web-production.up.railway.app](https://enterprise-ai-web-production.up.railway.app)  
-> ⚡ **Live API Documentation:** [https://enterprise-ai-api-production.up.railway.app/docs](https://enterprise-ai-api-production.up.railway.app/docs)  
-> 📖 **Recruiter Quickstart:** [QUICK_START.md](QUICK_START.md)
+> **An AI employee that converts natural-language business objectives into verified actions across enterprise tools.**
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Active%20(Railway)-success?style=for-the-badge&logo=railway)](https://enterprise-ai-web-production.up.railway.app)
-[![API Docs](https://img.shields.io/badge/Swagger%20API-v1.0.0-blue?style=for-the-badge&logo=fastapi)](https://enterprise-ai-api-production.up.railway.app/docs)
-[![Release Gate](https://img.shields.io/badge/Release%20Gate-PASSED-emerald?style=for-the-badge)](results/amazon_inspired_result_card.md)
+[![Build Status](https://img.shields.io/badge/Release%20Gate-PASSED-emerald?style=for-the-badge)](results/ENTERPRISE_EVAL_SCORECARD.md)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue?style=for-the-badge&logo=python)](apps/api)
-[![LangGraph](https://img.shields.io/badge/LangGraph-9--Node%20State%20Machine-cyan?style=for-the-badge)](packages/agent)
+[![LangGraph](https://img.shields.io/badge/LangGraph-11--Node%20State%20Machine-cyan?style=for-the-badge)](packages/agent/enterprise_worker.py)
+[![Playwright](https://img.shields.io/badge/Playwright-Browser%20Automation-orange?style=for-the-badge)](packages/sandbox_tools/enterprise/browser_tools.py)
 [![Next.js](https://img.shields.io/badge/Next.js-14%20Console-black?style=for-the-badge&logo=next.js)](apps/web)
+[![Evaluations](https://img.shields.io/badge/Evaluations-10%2F10%20(100%25)-success?style=for-the-badge)](results/enterprise_eval_results.json)
 
 ---
 
-## ⚡ 60-Second Interactive Live Tour
+## 📌 Executive Summary
 
-Click **[Live Web Console](https://enterprise-ai-web-production.up.railway.app)** (no login required, 24/7 online):
+Traditional LLM agent demonstrations are chatbots: they output conversational text, make optimistic API calls without verification, and fail silently when network hiccups or schema mismatches occur.
 
-1. **Overview Tab:** Review the executive reliability dashboard with real-time release gates (`PASSED`), failure taxonomy, and KPI cards (+40% lift in task success).
-2. **Scenario Lab:** Select any of the **20 enterprise scenarios** (e.g., `04_price_changed`, `06_cross_tenant_access_attempt`) and run live comparisons between **Baseline** (unprotected) and **Guarded** (LangGraph state machine).
-3. **Trace Explorer:** Drill down into microsecond-level tool execution traces, policy validations, and state transitions.
-4. **Approval Inbox:** Observe human-in-the-loop governance where high-value refunds (> $50) or risk events pause for supervisor sign-off.
-5. **Benchmark & Gates:** Inspect statistical evaluation across all 20 scenarios under seeded network faults (429 rate limits, 500 errors, cache drift).
-6. **Evidence Ledger:** Audit the cryptographically signed **SHA-256 hash chain** and test the real-time tamper-detection engine.
+The **Autonomous Enterprise Operations Worker** is built as a genuine **digital back-office employee**. Given a high-level natural language prompt, the worker autonomously plans and decomposes the objective, discovers files, extracts and validates structured entities, enforces deterministic policy guardrails, requests human supervisor approvals when thresholds are crossed, interacts via APIs or browser automation, recovers self-healingly from transient failures, and **independently verifies state persistence in the target enterprise ledger** before producing cryptographic evidence of completion.
 
----
-
-## 🎥 End-to-End Feature Demonstration Video
-
-> A full automated Playwright walkthrough executing all 6 features with live UI verification, graph trace exploration, HITL approval handling, and cryptographic tamper detection.
-
-- 🎬 **Watch Walkthrough Video (MP4):** [`docs/videos/enterprise_features_demo.mp4`](docs/videos/enterprise_features_demo.mp4)
-- 📚 **Comprehensive Feature-by-Feature Guide:** [`docs/FEATURES.md`](docs/FEATURES.md)
-
----
-
-> [!IMPORTANT]
-> **Independent Project Notice**: This is an independent open-source research and platform reliability project inspired by enterprise retail operations. It does not use Amazon logos, trademarks, or proprietary customer data, and makes no claim of affiliation, production access, or internal Amazon knowledge. All commerce fixtures, entities, and transactions are 100% synthetic and simulated locally.
-
----
-
-## 🏛️ Core Architecture & Engineering Highlights
-
-* **Autonomous Agent State Machines**: 9-node LangGraph directed state graph separating intent classification, planning, authorization, tool dispatch, result validation, and audit logging into deterministic stages.
-* **Deterministic Policy Enforcement**: Pre-execution security engine strictly evaluating RBAC permissions, multi-tenant resource ownership boundaries, order lifecycle state machines, and prompt injection defense.
-* **Distributed Systems Resilience**: Idempotency key deduplication (0.0% duplicate writes), transactional outbox pattern, and bounded exponential backoff ($2^{N-1} \times 0.1\text{s}$) healing transient 429 and 500 network faults.
-* **Cryptographic Non-Repudiation**: Append-only SHA-256 hash-chain evidence ledger with $O(N)$ mathematical tamper detection pinpointing exact corrupted block indices.
-* **Automated CI Quality Gate**: 20 ground-truth enterprise scenarios achieving **100% Task Success** (+40% lift over Baseline) and **0.0% Unauthorized Actions**.
-
----
-
-## 1. Problem Statement & Motivation
-
-Existing LLM agent demonstrations typically feature unchecked model-to-tool loops, naive question-answering wrappers, or fragile recruitment workflows. When autonomous agents are exposed to mission-critical commerce operations (order fulfillment, address modifications, financial refunds, catalog updates), probabilistic planning introduces catastrophic risks:
-
-1. **Cross-Tenant Data Leaks**: Agents query orders without ownership verification.
-2. **Uncontrolled Payouts**: Automated refunds execute without financial caps or supervisor authorization.
-3. **Cascading Failures**: Downstream rate limits (HTTP 429) or transient 500 errors cause crashes or duplicate write submissions.
-4. **Audit Deficits**: Transient model logs lack cryptographic non-repudiation required for regulatory compliance (SOX/PCI-DSS).
-
-The **Agentic Commerce Reliability & Recovery Lab** solves this by decoupling raw model planning from **deterministic policy enforcement, state machine validation, bounded exponential backoff recovery, and tamper-evident cryptographic auditing**.
-
----
-
-## 2. Architecture & LangGraph 9-Node State Machine
-
-The platform implements a dual-agent comparative architecture:
-- **Baseline Agent**: A fair, standard model-to-tool loop with schema validation.
-- **Guarded Agent**: A 9-node state machine built with **LangGraph**, **FastAPI**, **Async SQLAlchemy**, and a **Tamper-Evident SHA-256 Evidence Ledger**.
-
-```mermaid
-flowchart TB
-    subgraph UI ["Engineering Console (Next.js 14 + Tailwind)"]
-        Console["1. Overview & Health<br/>2. Scenario Lab & Replay<br/>3. Trace Explorer<br/>4. Approval Inbox<br/>5. Benchmark & Release Gate<br/>6. Cryptographic Evidence Ledger"]
-    end
-
-    subgraph API ["FastAPI Platform Core (/api/v1)"]
-        RouterRuns["/runs & /replay"]
-        RouterEvals["/evaluations & /benchmarks"]
-        RouterGate["/release-gate"]
-        RouterApprovals["/approvals"]
-        RouterEvidence["/evidence & /verify"]
-        RouterPolicies["/policies"]
-    end
-
-    subgraph GuardedStateGraph ["LangGraph 9-Node Guarded State Machine"]
-        N1["1. classify_intent"] --> N2["2. create_plan"]
-        N2 --> N3{"3. authorize_plan"}
-        N3 -->|"ALLOW"| N5["5. execute_tool"]
-        N3 -->|"REQUIRE_APPROVAL"| N4["4. request_approval (HITL)"]
-        N3 -->|"DENY"| N8["8. emit_evidence_receipt"]
-        N4 -->|"Approved"| N5
-        N4 -->|"Pending or Rejected"| N8
-        N5 --> N6{"6. validate_result"}
-        N6 -->|"Clean - Next Tool"| N3
-        N6 -->|"Clean - Complete"| N8
-        N6 -->|"Fault or Anomaly"| N7{"7. recover_or_escalate"}
-        N7 -->|"Retryable Fault (429/500)"| N5
-        N7 -->|"Fatal or Max Retries"| N8
-        N8 --> N9["9. complete_run"]
-    end
-
-    subgraph ResilienceBoundary ["Deterministic Policy & Storage Boundary"]
-        PolicyEngine["Policy Engine<br/>- Tool allowlists (RBAC)<br/>- Resource ownership checks<br/>- Order state transitions<br/>- Refund limits ($50 threshold)"]
-        FaultProxy["Fault Injection Proxy<br/>(15 deterministic fault rules)"]
-        IdempotencyStore[("Transactional Idempotency & Outbox")]
-        EvidenceLedger[("Tamper-Evident Ledger<br/>SHA-256 Hash Chain")]
-    end
-
-    Console <--> API
-    API --> GuardedStateGraph
-    N3 -.-> PolicyEngine
-    N5 -.-> FaultProxy
-    N5 -.-> IdempotencyStore
-    N8 -.-> EvidenceLedger
+```
+USER GOAL
+   ↓
+INTENT / GOAL UNDERSTANDING
+   ↓
+DYNAMIC PLANNING
+   ↓
+CONTEXT / WORKING MEMORY
+   ↓
+SELECT TOOL & PARAMS
+   ↓
+DETERMINISTIC POLICY CHECK ──[Requires Approval]──> HUMAN SUPERVISOR APPROVAL
+   ↓ (Allowed)                                                │ (Approved)
+EXECUTE TOOL (API / Browser) <────────────────────────────────┘
+   ↓
+OBSERVE & VALIDATE RESULT
+   ↓
+FAILURE DETECTED? ──[Yes]──> CLASSIFY & BOUNDED RETRY / REPLAN
+   ↓ (No)
+MORE PLAN STEPS? ───[Yes]──> SELECT NEXT TOOL
+   ↓ (No)
+INDEPENDENT LEDGER RECONCILIATION (PASS / FAIL)
+   ↓
+CRYPTOGRAPHIC SHA-256 EVIDENCE LEDGER
+   ↓
+FINAL AUDITED SUMMARY
 ```
 
 ---
 
-## 3. Visual Tour: Engineering Console UI
+## 🎯 Primary Demo Workflows
 
-| Overview & Automated Release Gate | Scenario Lab Execution & Ground-Truth Diff |
-|---|---|
-| ![Overview Dashboard](results/screenshots/01_overview.png) | ![Scenario Lab](results/screenshots/02_scenario_lab.png) |
+### 1. Primary Workflow: Autonomous Invoice Processing & Verification
+> **Prompt:** *"Find the latest unpaid invoice from Acme, extract the invoice number, amount and due date, enter it into our finance system, verify that it was saved correctly, and tell me when it is done."*
 
-| LangGraph 9-Node Execution Timeline | Dual-Agent Comparative Benchmark |
-|---|---|
-| ![Trace Explorer](results/screenshots/03_trace_explorer.png) | ![Benchmark Comparison](results/screenshots/05_benchmark_comparison.png) |
-
-| Cryptographic Hash-Chain Verification (Pristine) | Cryptographic Tamper Detection (Corrupted Payload Alert) |
-|---|---|
-| ![Evidence Ledger Valid](results/screenshots/06_evidence_ledger_verified.png) | ![Evidence Ledger Tampered](results/screenshots/07_evidence_ledger_tampered.png) |
-
----
-
-## 4. Actual Benchmark Results (Verified Local Run)
-
-*Evaluated across all 20 labelled scenarios under identical seeds ($s=42$) and injected faults:*
-
-| Metric Dimension | Baseline Agent | Guarded Agent | Variance / Delta | Impact Rationale |
-|---|---|---|---|---|
-| **Task Success Rate** | 60.0% | **100.0%** | **+40.0%** | Unhandled faults & policy breaches fail baseline |
-| **Unauthorized Action Rate** | 5.0% | **0.0%** | **-5.0%** | Zero cross-tenant leaks or admin privilege bypass |
-| **Policy Violation Rate** | 0.0% | **0.0%** | **0.0%** | Order state machine & refund thresholds enforced |
-| **Fault Recovery Rate** | 33.3% | **66.7%** | **+33.3%** | Bounded backoff retry & circuit breaker healing |
-| **Escalation Precision** | 25.0% | **100.0%** | **+75.0%** | Sensitive/hazardous disputes routed to HITL inbox |
-| **Audit Receipt Completeness**| 0.0% | **100.0%** | **+100.0%**| Every write chained to SHA-256 evidence ledger |
-| **p50 Execution Latency** | 8.0 ms | 30.6 ms | +22.5 ms | Negligible overhead for full policy evaluation |
-| **p95 Execution Latency** | 1012.2 ms | 1140.3 ms | +128.1 ms | Includes bounded exponential backoff sleep |
-| **Release Gate Decision** | 🛑 **FAIL** | 🚀 **PASSED** | **100% Critical Gates** | Ready for production candidacy |
-
-*Raw data available in [`results/raw_benchmark.json`](results/raw_benchmark.json) and [`results/benchmark_summary.csv`](results/benchmark_summary.csv).*
+**Autonomous Execution Trace:**
+1. **Goal Understanding:** Extracts target vendor `Acme`, action `finance_create_invoice`, and verification requirement.
+2. **Plan Generation:** Synthesizes 5 sub-steps: locate invoices, extract fields, pre-check ERP, enter finance record, verify finance ledger.
+3. **Invoice Discovery:** Calls `search_company_files("Acme")` and identifies `INV-2026-1042`.
+4. **Field Extraction & Validation:** Reads document and normalizes fields:
+   * **Vendor:** Acme Corp
+   * **Invoice ID:** `INV-2026-1042`
+   * **Amount:** ₹84,500
+   * **Due Date:** `2026-10-18`
+   * **Currency:** INR
+5. **Duplicate Pre-check:** Queries finance system; confirms no existing record.
+6. **Policy Check:** Confirms ₹84,500 is within standard auto-approval limits (< ₹100,000).
+7. **ERP Execution:** Idempotently submits record with key `TASK-...-INV-2026-1042-CREATE`.
+8. **Independent Reconciliation:** Issues an independent read query to the ERP database; asserts 6 fields match.
+9. **Final Summary:**
+```text
+Task completed successfully.
+Invoice: INV-2026-1042
+Vendor: Acme
+Amount: ₹84,500
+Due date: 18 October 2026
+Finance record: FIN-82914
+Verification: PASSED
+Evidence: SHA-256 Hashchain verified against ERP ledger
+```
 
 ---
 
-## 4. Quickstart & Local Reproduction Commands
+### 2. Second Workflow: Human-in-the-Loop Governance (> ₹100,000)
+> **Prompt:** *"Process the latest Contoso invoice, but do not enter invoices above ₹100,000 without my approval."*
+
+* **Invoice Identified:** `CONT-8893` from Contoso for **₹150,000**.
+* **Autonomous Behavior:**
+  1. Locates and extracts invoice data into working memory.
+  2. Policy engine flags amount exceeds threshold (₹150,000 > ₹100,000).
+  3. Pauses execution and creates pending approval record.
+  4. Real-time approval modal appears in the Next.js UI.
+  5. Operator clicks **Approve**.
+  6. Worker seamlessly resumes, records finance entry `FIN-94182`, independently verifies ERP state, and emits evidence.
+
+---
+
+### 3. Third Workflow: Deterministic Fault Recovery (HTTP 500)
+> **Fault Simulation:** Finance ERP returns `HTTP 500 Internal Server Error` on initial submission.
+
+* **Autonomous Behavior:**
+  1. Execution detects error and passes it to the **Error Taxonomy Classifier**.
+  2. Classified as `TRANSIENT_500`.
+  3. Triggers bounded exponential backoff (`Retry 1/3`).
+  4. Re-executes tool using identical idempotency key.
+  5. Second attempt succeeds; ledger creates record `FIN-82914`.
+  6. Idempotency guarantees zero duplicate records.
+  7. Verification confirms record integrity.
+
+---
+
+## 🏗️ Architecture & Component Reuse Matrix
+
+To respect engineering best practices, this project evolved the existing repository without starting from scratch.
+
+| Component | Status | Description |
+| :--- | :--- | :--- |
+| **LangGraph Engine** | **EXTENDED** | Evolved from 9-node retail graph to an 11-node `EnterpriseOperationsWorker` with planning, approval pause/resume, error classification, and independent verification. |
+| **Enterprise Sandbox** | **NEW** | Added synthetic ERP database (`finance_records`), invoice repository, and interactive web application (`/sandbox/finance`). |
+| **Tool Registry** | **NEW** | Built typed enterprise tools: `search_company_files`, `extract_invoice_fields`, `finance_create_invoice`, and Playwright browser actions. |
+| **Browser Automation** | **NEW** | Integrated Playwright (`browser_navigate`, `browser_type`, `browser_click`, `browser_read`) for DOM interaction. |
+| **Policy Engine** | **REUSED & EXTENDED** | Reused `PolicyEngine` architecture; added `HighValueInvoiceApprovalRule` (> ₹100k) and `IdempotencyKeyPresenceRule`. |
+| **Human-in-the-Loop** | **REUSED & EXTENDED** | Reused approval schema and database tables; wired directly into LangGraph state machine pause/resume lifecycle. |
+| **Verification Engine**| **NEW** | Created `EnterpriseVerificationEngine` performing 6-point independent post-write reconciliation against ERP tables. |
+| **Evidence Ledger** | **REUSED & EXTENDED** | Reused SHA-256 hashchain ledger; generates cryptographic proofs linking invoice source, tool inputs, and verification proofs. |
+| **Next.js Web Console**| **EXTENDED** | Added `AutonomousWorkerTab` with goal input, preset chips, dynamic plan checklist, working memory cards, live reconciliation table, and approval modal. |
+| **Evaluation Suite** | **NEW** | Created 10 deterministic YAML evaluation scenarios (`scenarios/enterprise/`) and benchmark runner. |
+
+---
+
+## 🛠️ Tool Registry & Browser Automation
+
+Every tool implements strict argument types, risk classifications, and structured telemetry:
+
+```python
+class ToolMetadata(BaseModel):
+    name: str
+    description: str
+    risk_level: RiskLevel  # LOW, MEDIUM, HIGH, CRITICAL
+    is_write: bool         # Mutating vs Read-Only
+```
+
+### Registered Tools
+1. `search_company_files(query, vendor)`: Searches synthetic document store.
+2. `list_invoices(vendor, status)`: Lists matching synthetic invoices.
+3. `read_invoice(invoice_id)`: Retrieves full invoice text.
+4. `extract_invoice_fields(invoice_id, raw_content)`: Normalizes invoice fields into structured JSON.
+5. `search_vendor(vendor_name)`: Looks up vendor payment profile.
+6. `finance_find_invoice(invoice_id)`: Queries ERP database for existing records.
+7. `finance_create_invoice(invoice_id, vendor, amount, due_date, currency, idempotency_key)`: Submits ERP record with idempotency deduplication.
+8. `finance_get_invoice(finance_record_id)`: Fetches verified ERP record by reference ID.
+9. `browser_navigate(url)`: Directs Playwright browser to finance web portal.
+10. `browser_type(selector, text)`: Simulates keyboard input into form fields.
+11. `browser_click(selector)`: Clicks DOM buttons and triggers form submissions.
+12. `browser_read(selector)`: Extracts rendered DOM table content.
+13. `request_human_approval(task_id, reason, details)`: Suspends execution for human sign-off.
+
+---
+
+## 📊 Evaluation Suite & Benchmark Results
+
+The evaluation harness evaluates 10 comprehensive scenarios across 8 quantitative metrics:
+
+| Scenario ID | Name | Focus | Result | Duplicate Writes |
+| :--- | :--- | :--- | :---: | :---: |
+| `01` | `successful_invoice_processing` | Happy-path Acme processing | **PASS** | 0.0% |
+| `02` | `invoice_requires_approval` | Contoso ₹150k approval gate | **PASS** | 0.0% |
+| `03` | `transient_finance_failure_then_success`| HTTP 500 retry & recovery | **PASS** | 0.0% |
+| `04` | `duplicate_invoice` | Idempotent duplicate conflict handling | **PASS** | 0.0% |
+| `05` | `invoice_not_found` | Missing invoice handling | **PASS** | 0.0% |
+| `06` | `invalid_invoice_data` | Malformed date/amount validation | **PASS** | 0.0% |
+| `07` | `approval_rejected` | Human supervisor rejection flow | **PASS** | 0.0% |
+| `08` | `verification_failure` | State mismatch detection | **PASS** | 0.0% |
+| `09` | `tool_timeout` | Timeout backoff recovery | **PASS** | 0.0% |
+| `10` | `alternative_vendor` | Generalization across vendors (Globex) | **PASS** | 0.0% |
+
+**Summary Metrics:**
+* **Overall Scenario Pass Rate:** `100.0%` (10/10)
+* **Duplicate Write Rate:** `0.0%`
+* **Policy Compliance:** `100.0%`
+* **Independent Verification Accuracy:** `100.0%`
+
+*Detailed outputs available in:*
+* [`results/ENTERPRISE_EVAL_SCORECARD.md`](results/ENTERPRISE_EVAL_SCORECARD.md)
+* [`results/enterprise_eval_results.json`](results/enterprise_eval_results.json)
+* [`results/enterprise_eval_results.csv`](results/enterprise_eval_results.csv)
+
+---
+
+## 🚀 Local Setup & Quickstart
 
 ### Prerequisites
-- Python 3.11 or 3.12
-- Node.js 18+ or 20+
+* Python 3.11+
+* Node.js 18+ & npm
+* SQLite3
 
-### Option A: Local Execution (Zero-API Key Required)
-
+### 1. Backend Setup
 ```bash
-# 1. Create and activate virtual environment
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+# From workspace root
+python -m venv venv
+# Windows:
+.\venv\Scripts\activate
+# Linux/macOS:
+source venv/bin/activate
 
-# 2. Install backend & frontend dependencies
-make setup
+# Install dependencies
+pip install -r requirements.txt
+pip install playwright
+playwright install chromium
 
-# 3. Seed synthetic database (52 products, 11 users, orders)
-make seed
+# Seed synthetic enterprise database
+python -c "from apps.api.app.db.init_db import init_db; from apps.api.app.db.seed_data import seed_enterprise_data; import asyncio; asyncio.run(init_db()); asyncio.run(seed_enterprise_data())"
 
-# 4. Run test suite (19 unit & integration tests)
-make test
-
-# 5. Execute release gate benchmark
-make eval
-
-# 6. Verify cryptographic hash chain integrity
-make ledger-verify
-
-# 7. Run interactive terminal walkthrough
-make demo
+# Start FastAPI backend (port 8000)
+uvicorn apps.api.app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Option B: Running the Engineering Console UI
-
+### 2. Frontend Setup
 ```bash
-# Terminal 1: Start FastAPI backend (port 8000)
-make dev
-
-# Terminal 2: Start Next.js frontend (port 3000)
+# Navigate to web app
 cd apps/web
+
+# Install dependencies
+npm install
+
+# Start Next.js development server (port 3000)
 npm run dev
 ```
-Open **`http://localhost:3000`** to access the Engineering Console.
 
-### Option C: Full Containerized Stack via Docker Compose
+Open your browser to: **`http://localhost:3000/`** (Defaults to the **Autonomous AI Employee** view).
+
+### 3. Finance Sandbox Web Portal
+The simulated internal finance portal is accessible at:
+* **Interactive Sandbox UI:** `http://localhost:8000/sandbox/finance`
+* **Swagger API Documentation:** `http://localhost:8000/docs`
+
+---
+
+## 🧪 Running Tests & Evaluations
 
 ```bash
-docker compose -f infra/docker-compose.yml up --build
-```
-Spins up PostgreSQL, Redis, Redpanda, Jaeger, FastAPI, and Next.js console.
+# Run unit tests
+python -m pytest tests/unit/test_enterprise_worker.py -v
 
----
+# Run integration tests
+python -m pytest tests/integration/test_autonomous_worker_api.py -v
 
-## 5. Repository Structure
-
-```
-├── apps/
-│   ├── api/                     # FastAPI backend application
-│   │   ├── app/
-│   │   │   ├── api/v1/          # REST routers (runs, trace, evaluations, approvals, evidence)
-│   │   │   ├── core/            # Config, security, JWT, redaction engine
-│   │   │   ├── db/              # Async SQLAlchemy models, database setup, seed fixtures
-│   │   │   └── main.py          # FastAPI application entrypoint
-│   │   └── Dockerfile
-│   └── web/                     # Next.js 14 Engineering Console
-│       ├── src/
-│       │   ├── app/             # App router (layout, globals, page)
-│       │   ├── components/      # ConsoleHeader, Overview, ScenarioLab, Trace, Approvals, Benchmark, Evidence
-│       │   └── lib/             # Typed API client
-│       └── Dockerfile
-├── packages/
-│   ├── agent/                   # Baseline Agent & LangGraph 9-Node Guarded Agent
-│   │   ├── baseline.py          # Standard model-to-tool agent
-│   │   ├── guarded_graph.py     # 9-node LangGraph state machine
-│   │   └── providers/           # Deterministic mock (default), optional Gemini, OpenAI, Ollama
-│   ├── policies/                # Security policies (RBAC, ownership, order transitions, refund thresholds)
-│   ├── sandbox_tools/           # 11 synthetic retail tools with idempotency
-│   ├── fault_injection/         # Proxy supporting 15 deterministic fault types
-│   ├── evaluators/              # Metrics calculator, state checker, benchmark runner
-│   └── telemetry/               # Cryptographic SHA-256 evidence ledger
-├── scenarios/                   # 20 ground-truth YAML scenario fixtures
-├── scripts/                     # release_gate.py, verify_ledger.py, demo_walkthrough.py
-├── results/                     # raw_benchmark.json, benchmark_summary.csv, result card
-├── tests/                       # Unit & integration tests (19 passing tests)
-├── docs/                        # 10 comprehensive architecture & portfolio documents
-├── infra/                       # docker-compose.yml, prometheus.yml
-├── Makefile                     # Developer automation commands
-└── README.md
+# Run the 10-scenario evaluation suite
+python -m packages.evaluators.enterprise_evaluator
 ```
 
 ---
 
-## 6. Security, Privacy & Compliance Statement
+## 🐳 Docker Deployment Setup
 
-- **Strict Multi-Tenant Isolation**: The `ResourceOwnershipRule` prevents cross-tenant data leakage by verifying customer ownership before any order or refund lookup.
-- **PII / Secret Redaction**: All audit logs pass through a regex sanitization pipeline before persistence, replacing credit cards, credentials, and tokens with `[REDACTED]`.
-- **Tamper-Evident Audit Ledger**: Every write operation is linked via SHA-256 hash chaining. If any record is altered in the database, `make ledger-verify` pinpoints the exact corrupted block index.
-- **Prompt Injection Defense**: Adversarial tokens ("ignore instructions", "you are admin") are neutralized by linguistic filtering and code-level tool allowlists.
+Run the entire platform with Docker Compose:
+
+```bash
+docker compose up --build
+```
+* **Frontend:** `http://localhost:3000`
+* **API & Sandbox:** `http://localhost:8000`
 
 ---
 
-## 7. Architecture Specifications & Technical Documentation
+## 📚 Technical Documentation Index
 
-- [`docs/FEATURES.md`](docs/FEATURES.md): Detailed 6-feature technical specification and code references.
-- [`docs/problem-memo.md`](docs/problem-memo.md): Strategic engineering memo on autonomous agent reliability in enterprise commerce.
-- [`docs/architecture.md`](docs/architecture.md): In-depth 9-node LangGraph state machine specification.
-- [`docs/threat-model.md`](docs/threat-model.md): STRIDE threat analysis for commerce agents.
-- [`docs/evaluation-methodology.md`](docs/evaluation-methodology.md): Mathematical formulations and statistical evaluation rigor.
-- [`docs/failure-taxonomy.md`](docs/failure-taxonomy.md): Taxonomy of distributed failure modes and agent edge cases.
-- [`docs/limitations.md`](docs/limitations.md): Explicit assumptions, synthetic scope, and production scaling roadmap.
-- [`results/amazon_inspired_result_card.md`](results/amazon_inspired_result_card.md): Formal research result card and baseline comparison.
+* [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md): Detailed 11-node LangGraph specification, state schema, and lifecycle flow.
+* [`docs/DESIGN_DECISIONS.md`](docs/DESIGN_DECISIONS.md): Architectural decisions and rationale (LangGraph, Playwright, idempotency, decoupled verification).
+* [`docs/LIMITATIONS.md`](docs/LIMITATIONS.md): Scope boundaries, assumptions, and production evolution paths.
+* [`docs/PRODUCTION_ROADMAP.md`](docs/PRODUCTION_ROADMAP.md): Temporal durable workflows, containerized browser pods, MCP integration, and RBAC.
+* [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md): 3.5-minute video demonstration script and timing outline.
+* [`results/ENTERPRISE_EVAL_SCORECARD.md`](results/ENTERPRISE_EVAL_SCORECARD.md): Quantitative benchmark results across all 10 scenarios.

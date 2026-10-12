@@ -1,0 +1,16 @@
+id: "03_transient_finance_failure_then_success"
+name: "Transient Finance HTTP 500 Failure & Recovery"
+description: "Simulate transient server failure on finance submission; agent classifies error as TRANSIENT, applies backoff retry, and succeeds."
+category: "resilience"
+goal: "Find the latest unpaid invoice from Acme, extract invoice number, amount and due date, enter it into finance system, and verify."
+expected_vendor: "Acme"
+expected_invoice_number: "INV-2026-1042"
+expected_amount: 84500.0
+expected_status: "SUCCESS"
+expected_verification: "PASSED"
+requires_approval: false
+simulate_fault: "HTTP_500"
+expected_tools:
+  - "list_invoices"
+  - "finance_create_invoice"
+  - "finance_get_invoice"

@@ -1,0 +1,11 @@
+id: "09_tool_timeout"
+name: "Gateway Timeout Recovery"
+description: "Simulate TRANSIENT gateway timeout on network tool call; agent applies backoff recovery and finishes successfully."
+category: "fault_tolerance"
+goal: "Find the latest unpaid invoice from Acme, enter into finance, and verify completion."
+expected_vendor: "Acme"
+expected_invoice_number: "INV-2026-1042"
+expected_status: "SUCCESS"
+expected_verification: "PASSED"
+requires_approval: false
+simulate_fault: "TRANSIENT_GATEWAY_TIMEOUT"

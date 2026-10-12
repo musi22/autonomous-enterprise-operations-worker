@@ -1,0 +1,19 @@
+id: "01_successful_invoice_processing"
+name: "Autonomous Invoice Ingestion & Verification"
+description: "Locate latest unpaid Acme invoice, extract fields, enter into finance system, and verify."
+category: "finance_operations"
+goal: "Find the latest unpaid invoice from Acme, extract the invoice number, amount and due date, enter it into our finance system, verify that it was saved correctly, and tell me when it is done."
+expected_vendor: "Acme"
+expected_invoice_number: "INV-2026-1042"
+expected_amount: 84500.0
+expected_due_date: "2026-10-18"
+expected_status: "SUCCESS"
+expected_verification: "PASSED"
+requires_approval: false
+simulate_fault: null
+expected_tools:
+  - "list_invoices"
+  - "read_invoice"
+  - "extract_invoice_fields"
+  - "finance_create_invoice"
+  - "finance_get_invoice"

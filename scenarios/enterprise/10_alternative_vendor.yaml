@@ -1,0 +1,19 @@
+id: "10_alternative_vendor"
+name: "Generalization to Alternative Vendor (Globex)"
+description: "Verify that the autonomous operations graph generalizes seamlessly to other enterprise vendors (Globex Corporation) without code changes."
+category: "generalization"
+goal: "Find the latest unpaid invoice from Globex, extract amount and due date, enter into finance system, and verify."
+expected_vendor: "Globex"
+expected_invoice_number: "GLOB-1102"
+expected_amount: 62000.0
+expected_due_date: "2026-10-25"
+expected_status: "SUCCESS"
+expected_verification: "PASSED"
+requires_approval: false
+simulate_fault: null
+expected_tools:
+  - "list_invoices"
+  - "read_invoice"
+  - "extract_invoice_fields"
+  - "finance_create_invoice"
+  - "finance_get_invoice"

@@ -1,25 +1,34 @@
-# System Assumptions, Scope Boundaries, and Engineering Limitations
+# System Limitations & Constraints
 
-**Project**: Agentic Commerce Reliability & Recovery Lab  
-**Domain**: Simulated Retail Operations Sandbox  
-
----
-
-## 1. Explicit Assumptions & Scope Boundaries
-
-1. **Synthetic Commerce Sandbox**: All customers, products, inventory records, orders, and payment transactions are 100% synthetic fixtures generated deterministically. The platform does not connect to real Amazon internal systems, live AWS production accounts, real credit card processors, or live customer PII.
-2. **Deterministic Default Model Provider**: In standard benchmarking mode, the platform utilizes a rule-informed local deterministic provider to allow zero-cost, reproducible, and completely offline verification. Optional adapters for Gemini, OpenAI, and Ollama are supported but not required for local validation.
-3. **No Financial Claims**: We measure technical metrics (task success rate, unauthorized action rate, latency, recovery rate, cryptographic audit completeness). We make no claims of revenue improvement or internal Amazon operational metrics.
+To ensure engineering rigor, this document outlines the boundary conditions, current limitations, and intentional design scope of the Autonomous Enterprise Operations Worker prototype, alongside the evolutionary path to production.
 
 ---
 
-## 2. Technical Limitations & Production Considerations
+## 1. Current Prototype Limitations
 
-1. **Single-Node Hash Chaining vs. Distributed Blockchains**:
-   - The current evidence ledger uses SHA-256 sequential hash-chaining stored in relational tables (SQLite/PostgreSQL).
-   - In massive multi-region distributed deployments, high concurrency would require Merkle trees or decentralized append-only ledgers (e.g. Amazon QLDB or verifiable log trees) to avoid serialization bottlenecks on single sequential chains.
-2. **Simplified Payment State Machine**:
-   - The sandbox implements the primary order lifecycle (`pending` $\to$ `confirmed` $\to$ `processing` $\to$ `shipped` $\to$ `delivered` / `cancelled`).
-   - Complex edge cases such as split-shipments, partial fulfillment from multiple regional fulfillment centers, and customs holds are simulated via abstract fault injection rules rather than full physical modeling.
-3. **Local Event Streaming Fallback**:
-   - While Docker Compose provides Redpanda (Kafka-compatible) for distributed event streaming, the local Python runner defaults to a transactional outbox table with an async event dispatcher to guarantee out-of-the-box developer execution without requiring heavy Docker containers.
+### 1.1 Scope of Enterprise Environment
+* **Current State:** The system executes workflows within a synthetic enterprise sandbox consisting of internal document repositories, SQLite ERP databases, and an internal finance web portal (`/sandbox/finance`).
+* **Boundary:** It intentionally does not connect to live corporate production systems (SAP, NetSuite, Salesforce) or use live corporate banking credentials.
+* **Production Evolution:** Integration via OAuth2/mTLS connectors to enterprise ERPs with strictly scoped service principals, read-only staging replicas, and canary rollout rings.
+
+### 1.2 Browser Automation Boundary
+* **Current State:** Playwright automation interacts with DOM elements in the simulated `/sandbox/finance` portal using semantic CSS selectors (`input[name="invoice_id"]`).
+* **Boundary:** The worker does not attempt unrestricted general-purpose desktop control (e.g. mouse drag-and-drop across native Windows apps) or bypass CAPTCHA challenges, SMS OTPs, or biometric MFA.
+* **Production Evolution:** For legacy systems without DOM access, integrate vision-based computer-use models (such as OSWorld-style coordinate models) operating inside isolated virtual display containers with human escalation for MFA.
+
+### 1.3 Tool Registry & Planner Extensibility
+* **Current State:** The planner reasons over a typed, curated registry of enterprise tools (`search_company_files`, `extract_invoice_fields`, `finance_create_invoice`, etc.).
+* **Boundary:** Dynamic runtime tool discovery (e.g. dynamically parsing arbitrary OpenAPI 3.0 specs on the fly and creating tools without human review) is not supported.
+* **Production Evolution:** Implement the Model Context Protocol (MCP) to allow dynamic server-sent tool discovery with automated static analysis and policy sandboxing before exposing tools to the agent.
+
+### 1.4 Verification Engine
+* **Current State:** Verification performs strict, deterministic semantic reconciliation against the SQLite database and ERP ledger across 6 discrete fields (`invoice_id`, `vendor`, `amount`, `currency`, `due_date`, `status`).
+* **Boundary:** It relies on predictable database schema representations and does not perform OCR on scanned paper checks or verify physical banking wire acknowledgments.
+* **Production Evolution:** Multi-modal reconciliation comparing bank statement PDFs, automated clearing house (ACH) transaction IDs, and ERP balance sheets with LLM-assisted semantic diffing.
+
+---
+
+## 2. Assumptions
+1. **Invoice Formatting:** Invoices are provided as structured synthetic JSON files simulating scanned PDF extractions.
+2. **Network Reliability:** Network failures within the local sandbox environment are simulated deterministically via `error_mode="transient_500"` to evaluate retry mechanisms without flakiness.
+3. **Single Active Workflow:** The prototype tracks tasks sequentially per session, though the database and state schema support concurrent multi-tenant tasks.

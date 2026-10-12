@@ -1,13 +1,9 @@
-// API_BASE is empty string on Vercel (no backend), so all fetches will fail gracefully
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
 // Determine if we're running in demo/offline mode (no backend configured)
-export const IS_DEMO_MODE = !API_BASE || API_BASE === "";
+export const IS_DEMO_MODE = false;
 
 async function safeFetch(url: string, options?: RequestInit) {
-  if (IS_DEMO_MODE) {
-    throw new Error("DEMO_MODE");
-  }
   try {
     const res = await fetch(url, { ...options, cache: "no-store" });
     return res;
@@ -107,3 +103,50 @@ export async function simulateTampering() {
   });
   return res.json();
 }
+
+export async function runAutonomousTask(payload: {
+  goal: string;
+  simulate_fault?: string | null;
+  use_browser?: boolean;
+  max_retries?: number;
+}) {
+  const res = await safeFetch(`${API_BASE}/api/v1/tasks/run`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || "Task execution failed");
+  }
+  return res.json();
+}
+
+export async function fetchTaskDetails(taskId: string) {
+  const res = await safeFetch(`${API_BASE}/api/v1/tasks/${taskId}`);
+  if (!res.ok) throw new Error("Failed to load task details");
+  return res.json();
+}
+
+export async function submitTaskApprovalDecision(taskId: string, decision: "approve" | "reject", reason?: string) {
+  const res = await safeFetch(`${API_BASE}/api/v1/tasks/${taskId}/decision`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ decision, reason }),
+  });
+  if (!res.ok) throw new Error("Task approval decision failed");
+  return res.json();
+}
+
+export async function fetchEnterpriseTasks() {
+  const res = await safeFetch(`${API_BASE}/api/v1/tasks`);
+  if (!res.ok) throw new Error("Failed to load tasks");
+  return res.json();
+}
+
+export async function fetchFinanceRecords() {
+  const res = await safeFetch(`${API_BASE}/api/v1/sandbox/finance/records`);
+  if (!res.ok) throw new Error("Failed to load finance records");
+  return res.json();
+}
+

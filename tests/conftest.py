@@ -13,6 +13,13 @@ def event_loop():
     yield loop
     loop.close()
 
+@pytest_asyncio.fixture(autouse=True)
+async def init_test_db():
+    from apps.api.app.db.database import engine, Base
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+
 @pytest_asyncio.fixture
 async def db_session():
     engine = create_async_engine(TEST_DATABASE_URL, echo=False)
@@ -28,3 +35,4 @@ async def db_session():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
     await engine.dispose()
+

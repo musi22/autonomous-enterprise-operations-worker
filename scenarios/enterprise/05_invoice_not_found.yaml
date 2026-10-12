@@ -1,0 +1,12 @@
+id: "05_invoice_not_found"
+name: "Missing Invoice Discovery Handling"
+description: "Search for invoices from a nonexistent vendor 'NonExistentCorp'; agent gracefully halts and explains missing data."
+category: "discovery"
+goal: "Find the latest unpaid invoice from NonExistentCorp, extract details, enter into finance, and verify."
+expected_vendor: "NonExistentCorp"
+expected_status: "FAILED"
+expected_verification: "NONE"
+requires_approval: false
+simulate_fault: null
+expected_tools:
+  - "list_invoices"

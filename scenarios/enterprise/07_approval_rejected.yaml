@@ -1,0 +1,15 @@
+id: "07_approval_rejected"
+name: "Human Supervisor Rejection Flow"
+description: "Process high-value invoice requiring approval; when human rejects request, agent terminates cleanly without writing."
+category: "human_in_the_loop"
+goal: "Process the latest Contoso invoice, but require human approval before submission."
+expected_vendor: "Contoso"
+expected_invoice_number: "CONT-8893"
+expected_status: "REJECTED"
+expected_verification: "NONE"
+requires_approval: true
+simulate_rejection: true
+simulate_fault: null
+expected_tools:
+  - "list_invoices"
+  - "extract_invoice_fields"

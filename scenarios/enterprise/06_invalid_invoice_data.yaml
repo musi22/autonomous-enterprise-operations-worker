@@ -1,0 +1,15 @@
+id: "06_invalid_invoice_data"
+name: "Malformed Invoice Data Validation"
+description: "Process invoice MAL-2026-999 with corrupted dates and null amount; extraction validator rejects malformed payload."
+category: "validation"
+goal: "Process invoice MAL-2026-999 from Invalid Data Co, extract details, enter into finance, and verify."
+expected_vendor: "Invalid Data Co"
+expected_invoice_number: "MAL-2026-999"
+expected_status: "FAILED"
+expected_verification: "NONE"
+requires_approval: false
+simulate_fault: null
+expected_tools:
+  - "list_invoices"
+  - "read_invoice"
+  - "extract_invoice_fields"
