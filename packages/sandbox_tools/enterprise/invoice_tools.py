@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 from typing import Dict, Any, List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, or_, and_, desc
@@ -221,10 +222,10 @@ async def extract_invoice_fields(
         extracted["vendor"] = vendor_match.group(1).strip() if vendor_match else "Acme Corp"
 
         # 3. Amount & Currency
-        # Look for ₹84,500 or Rs. 84,500 or TOTAL DUE: 84,500 or Amount: ₹84,500.00
-        amount_match = re.search(r"(?:TOTAL\s*DUE|Total\s*Amount|Amount):\s*[₹Rs\.]*\s*([0-9,]+(?:\.[0-9]{2})?)", text, re.IGNORECASE)
+        # Look for ₹84,500 or $1,450.00 or Rs. 84,500 or TOTAL AMOUNT DUE: $1,450.00 or Amount: 1450.00
+        amount_match = re.search(r"(?:TOTAL\s*AMOUNT\s*DUE|TOTAL\s*DUE|Total\s*Amount|Amount\s*Due|Amount):\s*[\$€£₹Rs\.]*\s*([0-9,]+(?:\.[0-9]{2})?)", text, re.IGNORECASE)
         if not amount_match:
-            amount_match = re.search(r"[₹]\s*([0-9,]+(?:\.[0-9]{2})?)", text)
+            amount_match = re.search(r"[\$€£₹]\s*([0-9,]+(?:\.[0-9]{2})?)", text)
 
         if amount_match:
             clean_num = amount_match.group(1).replace(",", "")
@@ -235,14 +236,43 @@ async def extract_invoice_fields(
         else:
             extracted["amount"] = 0.0
 
-        extracted["currency"] = "INR" if ("₹" in text or "INR" in text or "Rs" in text) else "USD"
+        if "$" in text or "USD" in text:
+            extracted["currency"] = "USD"
+        elif "€" in text or "EUR" in text:
+            extracted["currency"] = "EUR"
+        elif "£" in text or "GBP" in text:
+            extracted["currency"] = "GBP"
+        elif "₹" in text or "INR" in text or "Rs" in text:
+            extracted["currency"] = "INR"
+        else:
+            extracted["currency"] = "USD"
 
         # 4. Dates
-        inv_date_match = re.search(r"Invoice\s*Date:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})", text, re.IGNORECASE)
-        extracted["invoice_date"] = inv_date_match.group(1).strip() if inv_date_match else "2026-10-01"
+        inv_date_match = re.search(r"Invoice\s*Date:\s*([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{4})", text, re.IGNORECASE)
+        if inv_date_match:
+            d_str = inv_date_match.group(1).strip()
+            for fmt in ("%Y-%m-%d", "%d %B %Y", "%d %b %Y", "%d/%m/%Y", "%m/%d/%Y"):
+                try:
+                    d_str = datetime.strptime(d_str, fmt).strftime("%Y-%m-%d")
+                    break
+                except ValueError:
+                    pass
+            extracted["invoice_date"] = d_str
+        else:
+            extracted["invoice_date"] = "2026-10-01"
 
-        due_date_match = re.search(r"(?:Payment\s*)?Due\s*Date:\s*([0-9]{4}-[0-9]{2}-[0-9]{2})", text, re.IGNORECASE)
-        extracted["due_date"] = due_date_match.group(1).strip() if due_date_match else "2026-10-18"
+        due_date_match = re.search(r"(?:Payment\s*)?Due\s*Date:\s*([0-9]{4}-[0-9]{2}-[0-9]{2}|[0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4}|[0-9]{1,2}/[0-9]{1,2}/[0-9]{4})", text, re.IGNORECASE)
+        if due_date_match:
+            d_str = due_date_match.group(1).strip()
+            for fmt in ("%Y-%m-%d", "%d %B %Y", "%d %b %Y", "%d/%m/%Y", "%m/%d/%Y"):
+                try:
+                    d_str = datetime.strptime(d_str, fmt).strftime("%Y-%m-%d")
+                    break
+                except ValueError:
+                    pass
+            extracted["due_date"] = d_str
+        else:
+            extracted["due_date"] = "2026-10-18"
 
         # 5. Status
         status_match = re.search(r"Status:\s*(UNPAID|PAID|CANCELLED)", text, re.IGNORECASE)

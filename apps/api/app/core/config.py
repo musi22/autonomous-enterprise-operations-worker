@@ -1,6 +1,6 @@
 import os
 from typing import List, Optional
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Agentic Commerce Reliability & Recovery Lab"
@@ -37,8 +37,6 @@ class Settings(BaseSettings):
     # Seed
     GLOBAL_RANDOM_SEED: int = 42
 
-    class Config:
-        env_file = ".env"
-        extra = "allow"
+    model_config = SettingsConfigDict(env_file=".env", extra="allow")
 
 settings = Settings()

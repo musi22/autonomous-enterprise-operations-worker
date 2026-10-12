@@ -68,3 +68,46 @@ async def get_release_gate_status():
         "guarded_metrics": data.get("guarded_metrics"),
         "result_card_markdown": result_card_md
     }
+
+
+@router.get("/evaluations/enterprise")
+async def get_enterprise_evaluation_results():
+    """Retrieve the 10-scenario autonomous worker evaluation results."""
+    json_path = Path("results/enterprise_eval_results.json")
+    scorecard_path = Path("results/ENTERPRISE_EVAL_SCORECARD.md")
+
+    results_data = []
+    if json_path.exists():
+        with open(json_path, "r", encoding="utf-8") as f:
+            results_data = json.load(f)
+
+    scorecard_md = ""
+    if scorecard_path.exists():
+        with open(scorecard_path, "r", encoding="utf-8") as f:
+            scorecard_md = f.read()
+
+    return {
+        "status": "success",
+        "total_scenarios": len(results_data),
+        "pass_count": sum(1 for r in results_data if r.get("task_success")),
+        "scenarios": results_data,
+        "scorecard_markdown": scorecard_md
+    }
+
+
+@router.post("/evaluations/enterprise/run")
+async def run_enterprise_evaluation_batch():
+    """Execute all 10 enterprise evaluation scenarios live."""
+    from packages.evaluators.enterprise_evaluator import EnterpriseEvaluator
+    evaluator = EnterpriseEvaluator()
+    results = await evaluator.run_all()
+    scorecard_path = Path("results/ENTERPRISE_EVAL_SCORECARD.md")
+    scorecard_md = scorecard_path.read_text(encoding="utf-8") if scorecard_path.exists() else ""
+    return {
+        "status": "success",
+        "total_scenarios": len(results),
+        "pass_count": sum(1 for r in results if r.get("task_success")),
+        "scenarios": results,
+        "scorecard_markdown": scorecard_md
+    }
+

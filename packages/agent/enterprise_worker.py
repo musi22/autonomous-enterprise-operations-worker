@@ -63,6 +63,7 @@ class EnterpriseWorkerState(TypedDict, total=False):
     events: List[Dict[str, Any]]
     simulate_fault: Optional[str]
     use_browser: bool
+    custom_document: Optional[str]
 
 
 class EnterpriseOperationsWorker:
@@ -161,12 +162,19 @@ class EnterpriseOperationsWorker:
                 vendor = v.title() if v != "acme" else "Acme"
                 break
         if not vendor:
-            # Fallback regex for vendor extraction
-            v_match = re.search(r"(?:from|for|vendor)\s+([A-Za-z0-9]+)", goal)
-            if v_match:
-                vendor = v_match.group(1).title()
-            else:
-                vendor = "Acme"
+            # Check if custom document has Vendor field
+            if state.get("custom_document"):
+                v_match_doc = re.search(r"Vendor:\s*([^\n\r]+)", state["custom_document"], re.IGNORECASE)
+                if v_match_doc:
+                    vendor = v_match_doc.group(1).strip()
+
+            if not vendor:
+                # Fallback regex for vendor extraction
+                v_match = re.search(r"(?:from|for|vendor)\s+([A-Za-z0-9]+)", goal)
+                if v_match:
+                    vendor = v_match.group(1).title()
+                else:
+                    vendor = "Acme"
 
         # Check for approval condition
         approval_threshold = 100000.0  # Default ₹100,000
@@ -220,7 +228,39 @@ class EnterpriseOperationsWorker:
         entities = state.get("extracted_entities", {})
         vendor = entities.get("vendor", "Acme")
 
-        plan = [
+        if entities.get("check_only"):
+            plan = [
+                {
+                    "step_index": 0,
+                    "title": f"Discover {vendor} Invoices",
+                    "description": f"Query document repository for unpaid invoices matching vendor '{vendor}'.",
+                    "tool_name": "list_invoices",
+                    "status": "PENDING"
+                },
+                {
+                    "step_index": 1,
+                    "title": "Read Invoice Document",
+                    "description": "Read the raw document contents and metadata of the target invoice.",
+                    "tool_name": "read_invoice",
+                    "status": "PENDING"
+                },
+                {
+                    "step_index": 2,
+                    "title": "Duplicate Record Verification",
+                    "description": "Query internal finance system to verify if invoice has already been recorded.",
+                    "tool_name": "finance_find_invoice",
+                    "status": "PENDING"
+                },
+                {
+                    "step_index": 3,
+                    "title": "Cryptographic Audit Receipt",
+                    "description": "Generate tamper-evident hash-chained audit evidence and summary.",
+                    "tool_name": "emit_evidence",
+                    "status": "PENDING"
+                }
+            ]
+        else:
+            plan = [
             {
                 "step_index": 0,
                 "title": f"Discover {vendor} Invoices",
@@ -320,8 +360,8 @@ class EnterpriseOperationsWorker:
             args = {"invoice_number": inv_num, "file_path": file_path}
         elif tool_name == "extract_invoice_fields":
             args = {
-                "raw_document": memory.get("raw_content", ""),
-                "invoice_number_hint": memory.get("invoice_number")
+                "raw_document": state.get("custom_document") or memory.get("raw_content", ""),
+                "invoice_number_hint": None if state.get("custom_document") else memory.get("invoice_number")
             }
         elif tool_name == "finance_find_invoice":
             args = {
@@ -553,6 +593,7 @@ class EnterpriseOperationsWorker:
         tool_args = dict(state.get("tool_arguments", {}))
         session = state.get("session")
         task_id = state.get("task_id", "task_demo")
+        memory = state.get("memory", {})
         start_time = time.time()
 
         # Handle virtual steps
@@ -576,22 +617,61 @@ class EnterpriseOperationsWorker:
                 }
             }
 
-        # Inject session for tools that query database
-        kwargs = dict(tool_args)
-        if tool_name in ["list_invoices", "read_invoice", "search_company_files", "search_vendor", "finance_find_invoice", "finance_create_invoice", "finance_get_invoice"]:
-            kwargs["session"] = session
-
-        try:
-            res: EnterpriseToolResult = await fn(**kwargs)
-            res_dict = res.model_dump()
-        except Exception as e:
-            res_dict = {
-                "success": False,
-                "status": "ERROR",
-                "error": str(e),
-                "error_category": ErrorCategory.TOOL_ERROR.value,
-                "retryable": True
+        # Inject custom document if provided by operator
+        custom_doc = state.get("custom_document")
+        if custom_doc and tool_name in ["list_invoices", "search_company_files", "read_invoice"]:
+            inv_match = re.search(r"Invoice\s*(?:Number|#|No\.?):\s*([A-Za-z0-9\-]+)", custom_doc, re.IGNORECASE)
+            extracted_inv = inv_match.group(1).strip() if inv_match else "CUSTOM-INV-001"
+            custom_inv = {
+                "invoice_number": extracted_inv,
+                "vendor": memory.get("vendor", "Custom Vendor"),
+                "amount": memory.get("amount", 0.0),
+                "status": "UNPAID",
+                "due_date": "2026-10-31",
+                "file_path": "/user_uploads/live_custom_document.txt"
             }
+            res_dict = {
+                "success": True,
+                "status": "SUCCESS",
+                "data": {
+                    "raw_content": custom_doc,
+                    "invoice_number": extracted_inv,
+                    "file_path": "/user_uploads/live_custom_document.txt",
+                    "latest_invoice": custom_inv,
+                    "invoices": [custom_inv]
+                },
+                "action_summary": f"Ingested live custom enterprise document ({extracted_inv}) directly from operator input."
+            }
+        else:
+            # Inject session for tools that query database
+            kwargs = dict(tool_args)
+            if tool_name in ["list_invoices", "read_invoice", "search_company_files", "search_vendor", "finance_find_invoice", "finance_create_invoice", "finance_get_invoice"]:
+                kwargs["session"] = session
+
+            # If operator enabled Playwright browser automation, interact with the simulated web portal
+            if state.get("use_browser") and tool_name == "finance_create_invoice":
+                try:
+                    from packages.sandbox_tools.enterprise.browser_tools import browser_navigate, browser_type, browser_click
+                    await browser_navigate("/sandbox/finance")
+                    await browser_type("#invoice_number", kwargs.get("invoice_number", "INV-2026-1042"))
+                    await browser_type("#vendor", kwargs.get("vendor", "Acme Corp"))
+                    await browser_type("#amount", str(kwargs.get("amount", 84500.0)))
+                    await browser_type("#due_date", kwargs.get("due_date", "2026-10-18"))
+                    await browser_click("#submit_btn")
+                except Exception:
+                    pass
+
+            try:
+                res: EnterpriseToolResult = await fn(**kwargs)
+                res_dict = res.model_dump()
+            except Exception as e:
+                res_dict = {
+                    "success": False,
+                    "status": "ERROR",
+                    "error": str(e),
+                    "error_category": ErrorCategory.TOOL_ERROR.value,
+                    "retryable": True
+                }
 
         latency_ms = (time.time() - start_time) * 1000
 
@@ -661,7 +741,7 @@ class EnterpriseOperationsWorker:
 
         # Update working memory based on tool outputs
         if tool_name == "list_invoices":
-            latest = data.get("latest_invoice")
+            latest = data.get("latest_invoice") or (data.get("invoices", [])[0] if data.get("invoices") else None)
             if latest:
                 memory["invoice_number"] = latest["invoice_number"]
                 memory["vendor"] = latest["vendor"]
@@ -684,7 +764,7 @@ class EnterpriseOperationsWorker:
             memory["vendor"] = data.get("vendor", memory.get("vendor"))
             memory["amount"] = float(data.get("amount", memory.get("amount", 0)))
             memory["due_date"] = data.get("due_date", memory.get("due_date"))
-            memory["currency"] = data.get("currency", "INR")
+            memory["currency"] = data.get("currency", memory.get("currency", "USD"))
         elif tool_name == "finance_find_invoice":
             if data.get("found"):
                 record = data.get("record") or {}

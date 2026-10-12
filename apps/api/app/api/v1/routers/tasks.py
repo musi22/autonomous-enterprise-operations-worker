@@ -19,6 +19,7 @@ class RunTaskRequest(BaseModel):
     simulate_fault: Optional[str] = Field(None, description="Optional fault injection code (e.g. 'HTTP_500')")
     use_browser: bool = Field(False, description="Whether to execute actions via Playwright browser")
     max_retries: int = Field(3, description="Maximum bounded retries for transient errors")
+    custom_document: Optional[str] = Field(None, description="Optional raw text of custom real invoice document to process")
 
 
 class TaskApprovalDecisionRequest(BaseModel):
@@ -55,7 +56,8 @@ async def run_autonomous_task(
         "max_retries": req.max_retries,
         "retry_count": 0,
         "simulate_fault": req.simulate_fault,
-        "use_browser": req.use_browser
+        "use_browser": req.use_browser,
+        "custom_document": req.custom_document
     }
 
     result = await worker.graph.ainvoke(state_input)

@@ -109,6 +109,7 @@ export async function runAutonomousTask(payload: {
   simulate_fault?: string | null;
   use_browser?: boolean;
   max_retries?: number;
+  custom_document?: string | null;
 }) {
   const res = await safeFetch(`${API_BASE}/api/v1/tasks/run`, {
     method: "POST",
@@ -147,6 +148,20 @@ export async function fetchEnterpriseTasks() {
 export async function fetchFinanceRecords() {
   const res = await safeFetch(`${API_BASE}/api/v1/sandbox/finance/records`);
   if (!res.ok) throw new Error("Failed to load finance records");
+  return res.json();
+}
+
+export async function fetchEnterpriseEvaluations() {
+  const res = await safeFetch(`${API_BASE}/api/v1/evaluations/enterprise`);
+  if (!res.ok) throw new Error("Failed to load enterprise evaluations");
+  return res.json();
+}
+
+export async function runEnterpriseEvaluations() {
+  const res = await safeFetch(`${API_BASE}/api/v1/evaluations/enterprise/run`, {
+    method: "POST",
+  });
+  if (!res.ok) throw new Error("Failed to run enterprise evaluations");
   return res.json();
 }
 

@@ -1,5 +1,5 @@
 {
-  "evaluation_timestamp": "2026-10-12T15:34:28Z",
+  "evaluation_timestamp": "2026-10-12T19:12:03Z",
   "summary": {
     "total_scenarios": 10,
     "task_success_rate_pct": 100.0,
@@ -10,7 +10,7 @@
     "approval_compliance_pct": 100.0,
     "verification_success_rate_pct": 100.0,
     "final_answer_correctness_pct": 100.0,
-    "avg_latency_ms": 167.3471212387085,
+    "avg_latency_ms": 208.77857208251953,
     "all_gates_passed": true
   },
   "scenarios": [
@@ -26,7 +26,7 @@
       "approval_compliance": true,
       "verification_success": true,
       "final_answer_correctness": true,
-      "latency_ms": 89.98894691467285,
+      "latency_ms": 140.75040817260742,
       "notes": "Finished with status SUCCESS (retries: 0)"
     },
     {
@@ -41,7 +41,7 @@
       "approval_compliance": true,
       "verification_success": true,
       "final_answer_correctness": true,
-      "latency_ms": 104.67648506164551,
+      "latency_ms": 159.79266166687012,
       "notes": "Finished with status SUCCESS (retries: 0)"
     },
     {
@@ -56,7 +56,7 @@
       "approval_compliance": true,
       "verification_success": true,
       "final_answer_correctness": true,
-      "latency_ms": 602.6372909545898,
+      "latency_ms": 666.1365032196045,
       "notes": "Finished with status SUCCESS (retries: 1)"
     },
     {
@@ -71,7 +71,7 @@
       "approval_compliance": true,
       "verification_success": true,
       "final_answer_correctness": true,
-      "latency_ms": 68.09663772583008,
+      "latency_ms": 106.64772987365723,
       "notes": "Finished with status SUCCESS (retries: 0)"
     },
     {
@@ -86,7 +86,7 @@
       "approval_compliance": true,
       "verification_success": true,
       "final_answer_correctness": true,
-      "latency_ms": 15.424728393554688,
+      "latency_ms": 23.4222412109375,
       "notes": "Finished with status FAILED (retries: 0)"
     },
     {
@@ -101,7 +101,7 @@
       "approval_compliance": true,
       "verification_success": true,
       "final_answer_correctness": true,
-      "latency_ms": 33.985137939453125,
+      "latency_ms": 84.72156524658203,
       "notes": "Finished with status FAILED (retries: 0)"
     },
     {
@@ -116,7 +116,7 @@
       "approval_compliance": true,
       "verification_success": true,
       "final_answer_correctness": true,
-      "latency_ms": 93.07622909545898,
+      "latency_ms": 151.15690231323242,
       "notes": "Finished with status REJECTED (retries: 0)"
     },
     {
@@ -131,7 +131,7 @@
       "approval_compliance": true,
       "verification_success": true,
       "final_answer_correctness": true,
-      "latency_ms": 1.3964176177978516,
+      "latency_ms": 0.0,
       "notes": "Independent verification engine successfully detected and caught expected amount mismatch."
     },
     {
@@ -146,7 +146,7 @@
       "approval_compliance": true,
       "verification_success": true,
       "final_answer_correctness": true,
-      "latency_ms": 591.9849872589111,
+      "latency_ms": 640.1386260986328,
       "notes": "Finished with status SUCCESS (retries: 1)"
     },
     {
@@ -161,7 +161,7 @@
       "approval_compliance": true,
       "verification_success": true,
       "final_answer_correctness": true,
-      "latency_ms": 72.2043514251709,
+      "latency_ms": 115.01908302307129,
       "notes": "Finished with status SUCCESS (retries: 0)"
     }
   ]

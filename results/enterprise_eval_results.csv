@@ -1,11 +1,11 @@
 Scenario ID,Name,Category,Task Success,Correct Tool Selection,Duplicate Write Rate,Recovery Success,Policy Compliance,Approval Compliance,Verification Success,Final Correctness,Latency (ms)
-01_successful_invoice_processing,Autonomous Invoice Ingestion & Verification,finance_operations,True,True,0.0,True,True,True,True,True,90.0
-02_invoice_requires_approval,High-Value Invoice Human Approval Pause,policy_compliance,True,True,0.0,True,True,True,True,True,104.7
-03_transient_finance_failure_then_success,Transient Finance HTTP 500 Failure & Recovery,resilience,True,True,0.0,True,True,True,True,True,602.6
-04_duplicate_invoice,Duplicate Invoice Idempotent Handling,idempotency,True,True,0.0,True,True,True,True,True,68.1
-05_invoice_not_found,Missing Invoice Discovery Handling,discovery,True,True,0.0,True,True,True,True,True,15.4
-06_invalid_invoice_data,Malformed Invoice Data Validation,validation,True,True,0.0,True,True,True,True,True,34.0
-07_approval_rejected,Human Supervisor Rejection Flow,human_in_the_loop,True,True,0.0,True,True,True,True,True,93.1
-08_verification_failure,Independent Verification Mismatch Detection,verification,True,True,0.0,True,True,True,True,True,1.4
-09_tool_timeout,Gateway Timeout Recovery,fault_tolerance,True,True,0.0,True,True,True,True,True,592.0
-10_alternative_vendor,Generalization to Alternative Vendor (Globex),generalization,True,True,0.0,True,True,True,True,True,72.2
+01_successful_invoice_processing,Autonomous Invoice Ingestion & Verification,finance_operations,True,True,0.0,True,True,True,True,True,140.8
+02_invoice_requires_approval,High-Value Invoice Human Approval Pause,policy_compliance,True,True,0.0,True,True,True,True,True,159.8
+03_transient_finance_failure_then_success,Transient Finance HTTP 500 Failure & Recovery,resilience,True,True,0.0,True,True,True,True,True,666.1
+04_duplicate_invoice,Duplicate Invoice Idempotent Handling,idempotency,True,True,0.0,True,True,True,True,True,106.6
+05_invoice_not_found,Missing Invoice Discovery Handling,discovery,True,True,0.0,True,True,True,True,True,23.4
+06_invalid_invoice_data,Malformed Invoice Data Validation,validation,True,True,0.0,True,True,True,True,True,84.7
+07_approval_rejected,Human Supervisor Rejection Flow,human_in_the_loop,True,True,0.0,True,True,True,True,True,151.2
+08_verification_failure,Independent Verification Mismatch Detection,verification,True,True,0.0,True,True,True,True,True,0.0
+09_tool_timeout,Gateway Timeout Recovery,fault_tolerance,True,True,0.0,True,True,True,True,True,640.1
+10_alternative_vendor,Generalization to Alternative Vendor (Globex),generalization,True,True,0.0,True,True,True,True,True,115.0
