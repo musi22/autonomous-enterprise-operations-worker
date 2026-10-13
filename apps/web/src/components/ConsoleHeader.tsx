@@ -46,11 +46,11 @@ export const ConsoleHeader: React.FC<HeaderProps> = ({ activeTab, setActiveTab, 
                   Autonomous Enterprise Operations Worker
                 </span>
                 <span className="text-[10px] font-mono uppercase bg-cyan-950 text-cyan-400 border border-cyan-800 px-1.5 py-0.5 rounded">
-                  v2.0-autonomous
+                  v2.1
                 </span>
               </div>
               <p className="text-[11px] text-slate-400">
-                AI Employee Platform — Autonomous Planning, Execution, Retries, Policy, and Independent Verification
+                Operations Console — Multi-Step Planning, Policy Enforcement, Self-Healing Retries & Independent Verification
               </p>
             </div>
           </div>

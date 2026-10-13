@@ -1,45 +1,39 @@
 # Autonomous Enterprise Operations Worker
 
-> **Production-Grade AI Digital Employee with Autonomous Planning, Deterministic Policy Governance, Fault Recovery, and Independent Cryptographic Verification.**
+> An autonomous operations worker that turns natural language business objectives into verified, audited multi-step actions across enterprise ERP systems and internal tools.
 
-[![Test Suite](https://img.shields.io/badge/Pytest%20%2B%20Playwright-29%2F29%20PASSED-success?style=for-the-badge&logo=pytest)](tests/)
-[![Release Gate](https://img.shields.io/badge/Release%20Gate-PASSED%20(100%25)-emerald?style=for-the-badge)](results/ENTERPRISE_EVAL_SCORECARD.md)
-[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?style=for-the-badge&logo=python&logoColor=white)](apps/api)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=for-the-badge&logo=fastapi&logoColor=white)](apps/api)
-[![LangGraph](https://img.shields.io/badge/LangGraph-11--Node%20State%20Machine-cyan?style=for-the-badge)](packages/agent/enterprise_worker.py)
-[![Playwright](https://img.shields.io/badge/Playwright-E2E%20Browser%20Automation-orange?style=for-the-badge&logo=playwright)](packages/sandbox_tools/enterprise/browser_tools.py)
-[![Next.js](https://img.shields.io/badge/Next.js-14%20Console-black?style=for-the-badge&logo=next.js)](apps/web)
-
----
-
-## 📌 Recruiter & Technical Evaluator Summary
-
-Most AI agent demonstrations are **fragile conversational wrappers**: they make blind API calls, crash on transient network errors, fail silently on malformed responses, and lack auditability.
-
-This project demonstrates **production-grade enterprise agent engineering**. It is an autonomous operations worker designed for mission-critical back-office workflows (finance ERP entry, document discovery, cross-system reconciliation) equipped with:
-
-- 🧠 **Genuine Autonomy:** Decomposes open-ended goals into dynamic 8-step plans without hard-coded workflow scripts.
-- 🛡️ **Deterministic Governance:** Enforces strict boundary rules (cross-tenant isolation, prompt injection defenses, idempotency keys, and human-in-the-loop approvals for transactions > ₹100k).
-- 🔁 **Self-Healing Fault Recovery:** Features automated fault classification with bounded exponential backoff (HTTP 500 retry recovery).
-- 🔍 **Independent State Reconciliation:** Never trusts raw HTTP 200 responses; queries the target ERP out-of-band to assert persistent database integrity.
-- 🔐 **Cryptographic Auditability:** Commits every state transition and action receipt into a tamper-evident SHA-256 hashchain ledger.
+[![Test Suite](https://img.shields.io/badge/pytest%20%2B%20playwright-29%2F29%20passed-brightgreen.svg)](tests/)
+[![Python](https://img.shields.io/badge/python-3.11-blue.svg)](apps/api)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110-teal.svg)](apps/api)
+[![LangGraph](https://img.shields.io/badge/LangGraph-11--node%20graph-cyan.svg)](packages/agent/enterprise_worker.py)
+[![Playwright](https://img.shields.io/badge/Playwright-E2E%20tested-orange.svg)](packages/sandbox_tools/enterprise/browser_tools.py)
+[![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](apps/web)
 
 ---
 
-## 🏆 Key Metrics & Engineering Highlights
+## Overview
 
-| Metric | Guarded AI Worker | Naive Baseline Agent |
-|:---|:---:|:---:|
-| **Task Success Rate** | **100%** (10/10 Enterprise Scenarios) | 60% |
-| **Unauthorized / Policy Violation Rate** | **0.0%** | 40% (Leaks customer data) |
-| **Duplicate Writes / Double Charges** | **0.0%** (Strict Idempotency) | 20% |
-| **Fault Recovery Rate (HTTP 500)** | **100%** (Self-healing backoff) | 0% (Fatal crash) |
-| **Automated Test Coverage** | **29 / 29 Passed** (Pytest + Playwright) | N/A |
-| **Audit Completeness** | **100%** SHA-256 Cryptographic Proofs | 0% |
+I designed and built this system to solve a fundamental reliability problem with LLM agents in enterprise environments. Most agent implementations today are optimistic chatbots: they generate conversational output, make unverified API calls, fail on transient network hiccups, and provide zero guarantee that the target database actually persisted the requested record.
+
+This project implements an autonomous back-office worker for enterprise operations (document discovery, multi-currency invoice extraction, ERP ledger insertion, and compliance gating) engineered around five production requirements:
+
+1. **Autonomous Multi-Step Planning:** Decomposes unstructured natural language goals into ordered execution plans dynamically rather than relying on brittle, hard-coded scripts.
+2. **Deterministic Governance & Safety:** Enforces strict boundary rules in code (cross-customer data isolation, prompt injection defense, idempotency deduplication, and automatic pauses for human supervisor sign-off on transactions above ₹100,000).
+3. **Self-Healing Fault Recovery:** Categorizes runtime exceptions (e.g., synthetic HTTP 500 server crashes) and executes bounded exponential backoff retries without human intervention.
+4. **Independent Final-State Verification:** Never assumes an HTTP 200 means success. The worker queries the ERP database out-of-band post-write, asserts field-level match against memory, and flags any discrepancy.
+5. **Cryptographic Auditability:** Commits every transition and action receipt into a sequential SHA-256 hash-chained ledger to ensure tamper detection.
 
 ---
 
-## 🏗️ Architecture & Execution Flow
+## Walkthrough Demo Video
+
+![Platform Walkthrough](docs/screenshots/platform_demo_walkthrough.webp)
+
+*End-to-end recording demonstrating autonomous plan synthesis, invoice processing, HITL threshold pauses, and cryptographic tamper detection.*
+
+---
+
+## System Architecture
 
 ```
                       NATURAL LANGUAGE OBJECTIVE
@@ -48,206 +42,218 @@ This project demonstrates **production-grade enterprise agent engineering**. It 
                      [ 1. Intent Classification ]
                                   │
                                   ▼
-                   [ 2. Dynamic 8-Step Planning ]
+                    [ 2. Dynamic Step Planning ]
                                   │
                                   ▼
-                  [ 3. Task Working Memory Store ]
+                   [ 3. Working Memory Context ]
                                   │
                                   ▼
-                 [ 4. Tool & Parameter Selection ]
+                  [ 4. Tool & Parameter Selection ]
                                   │
                                   ▼
-                 [ 5. Deterministic Policy Check ]
-                   │                             │
-        (Threshold Exceeded)                  (Within Policy)
-                   │                             │
-                   ▼                             │
-        [ 6. Human Approval (HITL) ]             │
-           • Pauses execution                    │
-           • Operator reviews & signs off        │
-                   │                             │
-                   └──────────────┬──────────────┘
-                                  │
-                                  ▼
-                     [ 7. Tool Execution Layer ]
-                     ├── REST API Transaction
-                     └── Playwright Browser Automation
-                                  │
-                                  ▼
-                  [ 8. Transient Fault Detected? ]
-                   ├── Yes ──> Bounded Backoff & Self-Healing Retry
-                   └── No
-                                  │
-                                  ▼
-               [ 9. Independent State Reconciliation ]
-                   • Queries target ERP out-of-band
-                   • Compares 6 fields against working memory
-                   • Flags partial writes / discrepancies
-                                  │
-                                  ▼
-               [ 10. Tamper-Evident Evidence Ledger ]
-                   • SHA-256 Hashchain commit
-                   • Verified receipt emitted
+                  [ 5. Deterministic Policy Check ]
+                    │                             │
+          (Threshold Exceeded)            (Within Policy)
+                    │                             │
+                    ▼                             │
+         [ 6. Human Approval (HITL) ]             │
+            • Pauses execution safely             │
+            • Operator reviews & signs off        │
+                    │                             │
+                    └──────────────┬──────────────┘
+                                   │
+                                   ▼
+                      [ 7. Tool Execution Layer ]
+                      ├── REST API Transaction
+                      └── Playwright Headless Browser
+                                   │
+                                   ▼
+                   [ 8. Transient Fault Detected? ]
+                    ├── Yes ──> Bounded Backoff & Self-Healing Retry
+                    └── No
+                                   │
+                                   ▼
+                [ 9. Independent State Reconciliation ]
+                    • Queries ERP database out-of-band
+                    • Validates 6 fields against working memory
+                    • Reconciles true persistent state
+                                   │
+                                   ▼
+                [ 10. Tamper-Evident Evidence Ledger ]
+                    • Appends block to SHA-256 hashchain
+                    • Emits cryptographically signed receipt
 ```
 
----
+### Architectural Highlights
 
-## 💻 Tech Stack & Skills Demonstrated
-
-| Domain | Technology / Library | What Was Built / Demonstrated |
-|:---|:---|:---|
-| **Agentic State Machine** | **LangGraph / Python 3.11** | 11-node cyclic state graph with checkpointing, pause/resume approval lifecycles, and working memory. |
-| **API Backend** | **FastAPI + Pydantic v2** | High-throughput async REST API with typed request schemas, SSE streaming, and OpenAPI/Swagger documentation. |
-| **Frontend Console** | **Next.js 14 + Tailwind CSS** | Real-time engineering dashboard with trace visualizer, scenario lab, approval inbox, and audit ledger. |
-| **Browser Automation** | **Playwright (Chromium)** | Headless & headed DOM automation navigating synthetic ERP forms, table reads, and button actions. |
-| **Resilience & Safety** | **Deterministic Policies** | Custom policy engine enforcing tenant boundaries, prompt injection filters, and financial approval gates. |
-| **Data & Cryptography** | **SQLite3 + SHA-256** | ACID transactional store with cryptographic hash chaining and real-time tamper detection. |
-| **Quality & Verification** | **Pytest + Playwright E2E** | 29 automated test cases spanning unit logic, integration endpoints, and full browser UI workflows. |
+- **LangGraph State Machine (`packages/agent/enterprise_worker.py`):** An 11-node cyclic state graph managing state transitions, working memory, and checkpointed pauses for human approval.
+- **Policy Engine (`packages/policies`):** Deterministic Python classes executing in the critical path before any tool dispatch. It blocks prompt injections, enforces resource tenant ownership, and pauses execution on financial amounts > ₹100,000.
+- **Dual Execution Layer (`packages/sandbox_tools`):** Executes actions via direct transactional APIs or headless Playwright Chromium sessions interacting with the synthetic ERP web portal (`/sandbox/finance`).
+- **Independent Verification Engine (`packages/eval`):** Validates write operations against the persistent SQLite store, ensuring zero partial-write anomalies.
+- **Cryptographic Evidence Ledger:** Every state change references the previous block's SHA-256 hash. If an operator or bad actor modifies a database row directly, the hashchain breaks and alerts immediately.
 
 ---
 
+## Benchmark Results
+
+I benchmarked this system against an un-guarded baseline agent across 20 synthetic enterprise scenarios (happy-path processing, cross-tenant leaks, high-value amounts, HTTP 500 crashes, and duplicate invoices):
+
+| Metric | Guarded Operations Worker | Baseline Agent |
+|:---|:---:|:---:|
+| **Task Success Rate** | **100%** (20/20) | 60% |
+| **Unauthorized Action Rate** | **0.0%** | 40% (Leaks tenant data) |
+| **Duplicate Writes / Double Charges** | **0.0%** (Strict Idempotency) | 20% |
+| **Transient Fault Recovery Rate** | **100%** (Self-healing backoff) | 0% (Fatal crash) |
+| **Automated Test Coverage** | **29 / 29 Passed** (Pytest + Playwright) | N/A |
+| **Cryptographic Audit Completeness** | **100%** SHA-256 Receipts | 0% |
+
 ---
 
-## 🎥 End-to-End Platform Walkthrough Video
+## Visual Feature Walkthrough
 
-![Platform Demo Walkthrough](docs/screenshots/platform_demo_walkthrough.webp)
-
-*Interactive tour demonstrating autonomous planning, execution, HITL approval gates, and cryptographic tamper verification.*
-
----
-
-## 📸 Feature-by-Feature Visual Tour & Screenshots
-
-### 1. Autonomous Operations Worker Execution
-> *Autonomously synthesizes an 8-step execution plan, normalizes multi-currency fields, and reconciles state out-of-band against the target ERP.*
+### 1. Autonomous Planning & State Reconciliation
+Autonomously discovers files, extracts invoice details across various currencies, and reconciles persistent state with the target ERP.
 
 ![Autonomous Worker Execution](docs/screenshots/02_autonomous_worker_execution.png)
 
-- **Dynamic Task Plan:** Steps tick off sequentially (`COMPLETED`) with microsecond execution latency tracking.
-- **Task-Scoped Working Memory:** Live display of discovered vendor, invoice ID, payable amount, and idempotency key.
-- **Independent Final-State Reconciliation:** Explicit assertion table comparing expected vs. actual database values (`VERIFICATION: PASSED`).
+- **Dynamic Task Plan:** Steps tick off in sequence with live execution latencies.
+- **Task-Scoped Working Memory:** Real-time visibility into extracted vendor, invoice ID, and amount.
+- **Independent Final-State Reconciliation:** Explicit field assertion table confirming database persistence.
 
 ---
 
-### 2. Overview Dashboard & Enterprise Release Gate
-> *Aggregates real-time operational safety KPIs and release criteria checklists.*
+### 2. Operational Overview & Release Gate Checklist
+Aggregates operational metrics, release gate criteria, and error classification.
 
 ![Overview Dashboard](docs/screenshots/01_overview_dashboard.png)
 
-- **KPI Metrics:** 100% Task Success, 0.0% Unauthorized Actions, 100% Fault Recovery, 100% Evidence Completeness.
-- **Release Gate Evaluation Checklist:** 5 deterministic criteria gating deployment to production.
-- **Observed Failure Taxonomy:** Live categorization of security, schema, and network exceptions.
+- **KPI Cards:** Task success rate, zero unauthorized actions, and fault recovery.
+- **Release Gate:** Deterministic checklist governing production readiness.
 
 ---
 
-### 3. Scenario Lab & Deterministic Policy Enforcement
-> *Demonstrates how Guarded Mode intercepts adversarial cross-customer access and prompt injection attacks.*
+### 3. Scenario Lab & Policy Enforcement
+Adversarial testing environment demonstrating how Guarded Mode intercepts security and compliance violations.
 
 ![Scenario Lab Policy Enforcement](docs/screenshots/03_scenario_lab_policy.png)
 
-- **Policy Interception:** Blocks unauthorized orders (`06_cross_customer_access`) with `REJECTED_POLICY`.
-- **Zero Hallucination:** Emits a deterministic policy violation audit receipt rather than executing dangerous actions.
+- **Policy Interception:** Blocks cross-customer access attempts with `REJECTED_POLICY`.
+- **Zero Hallucination:** Emits an audit violation receipt rather than taking unauthorized actions.
 
 ---
 
 ### 4. Trace Explorer (9-Node LangGraph Timeline)
-> *Full white-box observability into internal agent state transitions.*
+Complete white-box visibility into agent state transitions down to individual node payloads.
 
 ![Trace Explorer Timeline](docs/screenshots/04_trace_explorer_timeline.png)
 
-- **9-Node Graph:** `classify_intent` → `create_plan` → `authorize_plan` → `check_preconditions` → `execute_action` → `verify_effects` → `handle_fault_or_retry` → `reconcile_state` → `emit_evidence_receipt`.
-- **State Inspection:** Inspect exact input/output payloads at any step in the lifecycle.
+- Step-by-step breakdown from `classify_intent` to `emit_evidence_receipt`.
+- Full inspectability of input and output state dictionaries at each hop.
 
 ---
 
-### 5. Human-in-the-Loop Approval Queue (HITL Governance)
-> *Centralized operational governance for actions exceeding financial thresholds.*
+### 5. Human-in-the-Loop Governance Queue
+Approval inbox for reviewing actions that exceed financial policies.
 
 ![Approval Inbox](docs/screenshots/05_approval_inbox.png)
 
-- **Threshold Alerts:** Pauses high-value transactions (> ₹100,000) before mutating internal ledgers.
-- **Supervisor Actions:** Operations leads can review proposed vendor and amount before approving or rejecting.
+- Automatically halts tasks when invoice amounts exceed policy limits (> ₹100,000).
+- Allows operational supervisors to approve or reject with audit trail attribution.
 
 ---
 
 ### 6. Dual-Agent Comparative Benchmarks
-> *Head-to-head empirical evaluation across 20 enterprise scenarios.*
+Head-to-head empirical metrics comparing guarded execution against un-guarded baseline agents.
 
 ![Benchmark Comparison](docs/screenshots/06_benchmark_comparison.png)
 
-- **Guarded Worker:** 100% task success rate, 0% unauthorized actions.
-- **Baseline Worker:** 60% success rate, 40% unauthorized actions (frequently violates tenant isolation).
-- **Export Actions:** Download full benchmark datasets via CSV or raw JSON.
+- Direct export of benchmark results in CSV and raw JSON formats.
 
 ---
 
-### 7. Tamper-Evident Cryptographic Evidence Ledger
-> *Sequential SHA-256 hashchain ensuring non-repudiation and immediate corruption detection.*
+### 7. Tamper-Evident Evidence Ledger
+Cryptographically guarantees the integrity of operational audit logs.
 
 ![Evidence Ledger Tamper Detection](docs/screenshots/07_evidence_ledger_tamper.png)
 
-- **Integrity Verification:** Traverses previous block hashes to confirm 100% unaltered audit logs.
-- **Tamper Simulation:** Click *Simulate DB Tampering* to witness the system pinpoint the exact corrupted block index in real time.
+- Traverses previous SHA-256 block hashes to verify 100% unaltered records.
+- Live tamper simulation immediately flags the exact corrupted block index.
 
 ---
 
 ### 8. Synthetic ERP Finance Portal
-> *Internal ERP sandbox mimicking SAP / NetSuite operational environments.*
+Simulated enterprise finance portal at `/sandbox/finance` where records are posted and verified in real time.
 
 ![Synthetic ERP Sandbox](docs/screenshots/08_synthetic_erp_sandbox.png)
 
-- **Direct Portal:** Inspect invoices created by the agent in real time at `http://localhost:8000/sandbox/finance`.
-- **Fault Injection Controls:** Built-in triggers for synthetic HTTP 500 crashes and idempotency conflicts.
+---
+
+## Tech Stack
+
+- **Backend:** Python 3.11, FastAPI, Pydantic v2, Uvicorn, SQLite3, HTTPX
+- **Orchestration:** LangGraph (11-node cyclic state machine), LiteLLM
+- **Browser Automation:** Playwright Chromium (headless DOM interaction)
+- **Frontend Console:** Next.js 14, TypeScript, Tailwind CSS, Lucide Icons
+- **Cryptography & Security:** SHA-256 hash chaining, deterministic policy rules
+- **Testing:** Pytest, Pytest-Asyncio, Playwright E2E test runner
 
 ---
 
-## 🚀 60-Second Quick Start
+## Quick Start (Run Locally)
 
-### 1. Clone & Setup Backend
+### 1. Prerequisites
+- Python 3.11+
+- Node.js 18+ and npm
+
+### 2. Backend Setup
 ```bash
+# Clone the repository
 git clone https://github.com/musi22/autonomous-enterprise-operations-worker.git
 cd autonomous-enterprise-operations-worker
 
-# Setup Python Virtual Environment
+# Setup virtual environment
 python -m venv .venv
-.\.venv\Scripts\activate      # On Windows
-# source .venv/bin/activate   # On Linux/macOS
 
-# Install dependencies & Playwright browser
+# On Windows:
+.\.venv\Scripts\activate
+# On Linux/macOS:
+# source .venv/bin/activate
+
+# Install dependencies and Playwright browser
 pip install -r requirements.txt
 playwright install chromium
 
-# Seed synthetic enterprise database
+# Seed initial database
 python -c "from apps.api.app.db.init_db import init_db; from apps.api.app.db.seed_data import seed_enterprise_data; import asyncio; asyncio.run(init_db()); asyncio.run(seed_enterprise_data())"
 
-# Start FastAPI server on port 8000
+# Start the FastAPI server on port 8000
 python -m uvicorn apps.api.app.main:app --host 0.0.0.0 --port 8000
 ```
 
-### 2. Setup Frontend Console
+### 3. Frontend Console Setup
 ```bash
-# In a new terminal window:
+# In a separate terminal:
 cd apps/web
 npm install
 npm run dev
 ```
 
-### 3. Access Live Applications
-- **Engineering Console:** [http://localhost:3000](http://localhost:3000)
-- **Interactive Swagger Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
-- **Synthetic ERP Finance Portal:** [http://localhost:8000/sandbox/finance](http://localhost:8000/sandbox/finance)
+Open your browser to:
+- **Operations Console:** [http://localhost:3000](http://localhost:3000)
+- **API Swagger Documentation:** [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Synthetic ERP Portal:** [http://localhost:8000/sandbox/finance](http://localhost:8000/sandbox/finance)
 
 ---
 
-## 🧪 Automated Test Suite
+## Test Suite
 
-Run the complete 29-test test suite covering unit, integration, and Playwright browser E2E tests:
+The test suite contains 29 automated tests spanning unit logic, integration endpoints, and full Playwright browser tests:
 
 ```bash
-# Run full test suite
+# Run all unit and integration tests
 pytest tests/ -v
 
-# Run Playwright end-to-end browser feature suite
+# Run the end-to-end Playwright console feature test
 python tests/e2e/test_console_features.py
 ```
 
@@ -290,7 +296,7 @@ tests/unit/test_policies.py::test_idempotency_key_presence PASSED        [100%]
 
 ---
 
-## 📁 Repository Directory Structure
+## Project Structure
 
 ```
 ├── apps/
@@ -317,6 +323,6 @@ tests/unit/test_policies.py::test_idempotency_key_presence PASSED        [100%]
 
 ---
 
-## 📄 License & Attribution
+## License
 
-Distributed under the MIT License. Built with modern enterprise AI engineering standards.
+MIT License.

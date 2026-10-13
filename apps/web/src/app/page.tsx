@@ -61,19 +61,9 @@ export default function ConsoleDashboard() {
       {/* Demo Mode Banner — shown on Vercel when no backend is connected */}
       {IS_DEMO_MODE && (
         <div className="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2 text-center text-sm text-amber-400">
-          <span className="font-semibold">📊 Portfolio Demo Mode</span>
+          <span className="font-semibold">Live Sandbox Environment</span>
           {" — "}
-          This live UI showcases the engineering console architecture. Connect a FastAPI backend
-          (see{" "}
-          <a
-            href="https://github.com/musi22/enterprise-agent-trust-platform"
-            className="underline hover:text-amber-300"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            GitHub README
-          </a>
-          ) to run live agent scenarios.
+          Connect a FastAPI backend to run live agent scenarios against real target ledgers.
         </div>
       )}
 
