@@ -106,21 +106,98 @@ This project demonstrates **production-grade enterprise agent engineering**. It 
 
 ---
 
-## 🎯 Core Features Evaluators Can Test
+---
 
-### 1. Primary Workflow: Autonomous Invoice Processing
-- **Input:** *"Find the latest unpaid invoice from Acme, extract amount and due date, enter into our finance system, and verify."*
-- **Execution:** Discovers file `ACM-2026-001`, extracts ₹45,000, generates idempotency key, posts to ERP, and verifies matching fields via out-of-band DB reconciliation.
+## 🎥 End-to-End Platform Walkthrough Video
 
-### 2. Human-in-the-Loop Policy Governance (> ₹100,000)
-- **Input:** *"Process the latest Contoso invoice, but do not enter invoices above ₹100,000 without my approval."*
-- **Execution:** Detects ₹150,000 invoice, automatically halts execution in a safe state, generates an approval item in the UI inbox, and seamlessly resumes upon human approval.
+![Platform Demo Walkthrough](docs/screenshots/platform_demo_walkthrough.webp)
 
-### 3. Self-Healing Resilience (HTTP 500 Auto-Recovery)
-- **Execution:** Simulates ERP crash (`HTTP 500 Internal Server Error`). The worker classifies the transient fault, executes bounded exponential backoff, retries safely, and succeeds without human intervention.
+*Interactive tour demonstrating autonomous planning, execution, HITL approval gates, and cryptographic tamper verification.*
 
-### 4. Cryptographic Evidence Ledger & Tamper Proofing
-- **Execution:** Every state change is chained via SHA-256 hashes. Users can click **"Simulate DB Tampering"** in the UI to see the platform immediately flag the exact corrupted block index.
+---
+
+## 📸 Feature-by-Feature Visual Tour & Screenshots
+
+### 1. Autonomous Operations Worker Execution
+> *Autonomously synthesizes an 8-step execution plan, normalizes multi-currency fields, and reconciles state out-of-band against the target ERP.*
+
+![Autonomous Worker Execution](docs/screenshots/02_autonomous_worker_execution.png)
+
+- **Dynamic Task Plan:** Steps tick off sequentially (`COMPLETED`) with microsecond execution latency tracking.
+- **Task-Scoped Working Memory:** Live display of discovered vendor, invoice ID, payable amount, and idempotency key.
+- **Independent Final-State Reconciliation:** Explicit assertion table comparing expected vs. actual database values (`VERIFICATION: PASSED`).
+
+---
+
+### 2. Overview Dashboard & Enterprise Release Gate
+> *Aggregates real-time operational safety KPIs and release criteria checklists.*
+
+![Overview Dashboard](docs/screenshots/01_overview_dashboard.png)
+
+- **KPI Metrics:** 100% Task Success, 0.0% Unauthorized Actions, 100% Fault Recovery, 100% Evidence Completeness.
+- **Release Gate Evaluation Checklist:** 5 deterministic criteria gating deployment to production.
+- **Observed Failure Taxonomy:** Live categorization of security, schema, and network exceptions.
+
+---
+
+### 3. Scenario Lab & Deterministic Policy Enforcement
+> *Demonstrates how Guarded Mode intercepts adversarial cross-customer access and prompt injection attacks.*
+
+![Scenario Lab Policy Enforcement](docs/screenshots/03_scenario_lab_policy.png)
+
+- **Policy Interception:** Blocks unauthorized orders (`06_cross_customer_access`) with `REJECTED_POLICY`.
+- **Zero Hallucination:** Emits a deterministic policy violation audit receipt rather than executing dangerous actions.
+
+---
+
+### 4. Trace Explorer (9-Node LangGraph Timeline)
+> *Full white-box observability into internal agent state transitions.*
+
+![Trace Explorer Timeline](docs/screenshots/04_trace_explorer_timeline.png)
+
+- **9-Node Graph:** `classify_intent` → `create_plan` → `authorize_plan` → `check_preconditions` → `execute_action` → `verify_effects` → `handle_fault_or_retry` → `reconcile_state` → `emit_evidence_receipt`.
+- **State Inspection:** Inspect exact input/output payloads at any step in the lifecycle.
+
+---
+
+### 5. Human-in-the-Loop Approval Queue (HITL Governance)
+> *Centralized operational governance for actions exceeding financial thresholds.*
+
+![Approval Inbox](docs/screenshots/05_approval_inbox.png)
+
+- **Threshold Alerts:** Pauses high-value transactions (> ₹100,000) before mutating internal ledgers.
+- **Supervisor Actions:** Operations leads can review proposed vendor and amount before approving or rejecting.
+
+---
+
+### 6. Dual-Agent Comparative Benchmarks
+> *Head-to-head empirical evaluation across 20 enterprise scenarios.*
+
+![Benchmark Comparison](docs/screenshots/06_benchmark_comparison.png)
+
+- **Guarded Worker:** 100% task success rate, 0% unauthorized actions.
+- **Baseline Worker:** 60% success rate, 40% unauthorized actions (frequently violates tenant isolation).
+- **Export Actions:** Download full benchmark datasets via CSV or raw JSON.
+
+---
+
+### 7. Tamper-Evident Cryptographic Evidence Ledger
+> *Sequential SHA-256 hashchain ensuring non-repudiation and immediate corruption detection.*
+
+![Evidence Ledger Tamper Detection](docs/screenshots/07_evidence_ledger_tamper.png)
+
+- **Integrity Verification:** Traverses previous block hashes to confirm 100% unaltered audit logs.
+- **Tamper Simulation:** Click *Simulate DB Tampering* to witness the system pinpoint the exact corrupted block index in real time.
+
+---
+
+### 8. Synthetic ERP Finance Portal
+> *Internal ERP sandbox mimicking SAP / NetSuite operational environments.*
+
+![Synthetic ERP Sandbox](docs/screenshots/08_synthetic_erp_sandbox.png)
+
+- **Direct Portal:** Inspect invoices created by the agent in real time at `http://localhost:8000/sandbox/finance`.
+- **Fault Injection Controls:** Built-in triggers for synthetic HTTP 500 crashes and idempotency conflicts.
 
 ---
 
