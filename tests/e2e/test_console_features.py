@@ -44,7 +44,8 @@ async def test_all_features_e2e():
 
         # Check Release Gate Checklist
         assert await page.is_visible("text=Release Gate Evaluation Checklist")
-        assert await page.is_visible("text=Zero Unauthorized Actions") or await page.is_visible("text=zero unauthorized actions") or await page.is_visible("text=PASS")
+        await page.wait_for_selector("text=PASS", timeout=10000)
+        assert await page.is_visible("text=PASS")
 
         # Check Failure Taxonomy
         assert await page.is_visible("text=Observed Failure Taxonomy")
@@ -128,13 +129,31 @@ async def test_all_features_e2e():
         await page.wait_for_selector("text=SECURITY ALERT: AUDIT TAMPERING OR CORRUPTION DETECTED!", timeout=10000)
         assert await page.is_visible("text=Broken at block index")
 
-        # Re-verify shows detected tampering
-        await page.click("button:has-text('Verify Ledger Integrity')")
+        # -------------------------------------------------------------
+        # Feature 7: Autonomous Worker Tab & Task Execution
+        # -------------------------------------------------------------
+        print("[Playwright] Testing Feature 7: Autonomous Worker Execution...")
+        await page.click("button:has-text('Autonomous Worker')")
+        await page.wait_for_selector("text=Run Autonomous Task", timeout=5000)
+        assert await page.is_visible("text=Autonomous Enterprise Operations Worker")
+        assert await page.is_visible("text=Natural language objective")
+
+        # Execute Autonomous Goal (Default Acme Goal)
+        await page.click("button:has-text('Run Autonomous Task')")
+        
+        # Await task execution completion (status pill changes to SUCCESS)
+        await page.wait_for_selector("text=SUCCESS", timeout=25000)
+        assert await page.is_visible("text=Autonomous Task Plan")
+        assert await page.is_visible("text=Task-Scoped Working Memory")
+        assert await page.is_visible("text=INDEPENDENT FINAL-STATE RECONCILIATION")
+        assert await page.is_visible("text=VERIFICATION: PASSED")
+        assert await page.is_visible("text=Field Assertion")
+
         # Reset DB back to clean state so subsequent tests maintain clean ledger state
         async with httpx.AsyncClient(timeout=15.0) as client:
             await client.post(f"{API_BASE}/api/v1/admin/reset-db")
 
-        print("\n[Playwright] [PASS] ALL 6 ENGINEERING CONSOLE FEATURES VERIFIED SUCCESSFULLY!")
+        print("\n[Playwright] [PASS] ALL 7 FEATURES VERIFIED END-TO-END SUCCESSFULLY!")
         await browser.close()
 
 if __name__ == "__main__":
