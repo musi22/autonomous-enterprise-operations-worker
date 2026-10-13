@@ -69,6 +69,12 @@ htmlcov/
 .railway/
 .vercel/
 
-# Ad-hoc Scratch
+# Ad-hoc Scratch & Media (Keep repo lightweight and clean)
 check_features.py
 scratch/
+*.mp4
+*.webm
+*.tsbuildinfo
+docs/videos/
+scripts/record_*.py
+scripts/convert_*.py
