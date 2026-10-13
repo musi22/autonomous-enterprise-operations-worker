@@ -2,7 +2,7 @@
 
 **Target Duration:** 3:30 – 4:00 Minutes  
 **System:** Autonomous Enterprise Operations Worker  
-**Presenting Engineer:** Senior AI Engineering Intern Candidate  
+**Presenting Engineer:** Rashmi Shaw  
 
 ---
 

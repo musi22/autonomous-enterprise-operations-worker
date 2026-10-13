@@ -2,8 +2,8 @@
 
 > A comprehensive technical breakdown of the 6 core enterprise reliability and security systems implemented in the platform.
 
-📹 **Video Walkthrough:** [`docs/videos/enterprise_features_demo.mp4`](videos/enterprise_features_demo.mp4)  
-🌐 **Live Interactive Console:** [https://enterprise-ai-web-production.up.railway.app](https://enterprise-ai-web-production.up.railway.app)
+📹 **Video Walkthrough:** [Visual tour & animated walkthrough in README.md](../README.md#walkthrough-demo-video)  
+🌐 **Live Interactive Console:** [https://autonomous-enterprise-operations-worker.vercel.app](https://autonomous-enterprise-operations-worker.vercel.app)
 
 ---
 

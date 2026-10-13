@@ -8,8 +8,7 @@
 ## 🚀 Live Cloud Demo (Instant — No Installation Required)
 
 Open the live cloud console directly in your browser:
-- **Live Web Console:** [https://enterprise-ai-web-production.up.railway.app](https://enterprise-ai-web-production.up.railway.app)
-- **Live API Documentation:** [https://enterprise-ai-api-production.up.railway.app/docs](https://enterprise-ai-api-production.up.railway.app/docs)
+- **Live Web Console:** [https://autonomous-enterprise-operations-worker.vercel.app](https://autonomous-enterprise-operations-worker.vercel.app)
 
 ---
 
@@ -21,15 +20,15 @@ Open the live cloud console directly in your browser:
 
 ### Windows
 ```powershell
-git clone https://github.com/musi22/enterprise-agent-trust-platform
-cd enterprise-agent-trust-platform
+git clone https://github.com/musi22/autonomous-enterprise-operations-worker.git
+cd autonomous-enterprise-operations-worker
 .\start.ps1
 ```
 
 ### Mac / Linux
 ```bash
-git clone https://github.com/musi22/enterprise-agent-trust-platform
-cd enterprise-agent-trust-platform
+git clone https://github.com/musi22/autonomous-enterprise-operations-worker.git
+cd autonomous-enterprise-operations-worker
 bash start.sh
 ```
 
@@ -43,8 +42,8 @@ The browser opens automatically at **http://localhost:3000**.
 - Docker Desktop ([docker.com](https://www.docker.com/products/docker-desktop))
 
 ```bash
-git clone https://github.com/musi22/enterprise-agent-trust-platform
-cd enterprise-agent-trust-platform
+git clone https://github.com/musi22/autonomous-enterprise-operations-worker.git
+cd autonomous-enterprise-operations-worker
 docker compose -f infra/docker-compose.yml up --build
 ```
 
