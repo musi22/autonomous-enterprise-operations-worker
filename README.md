@@ -2,7 +2,7 @@
 
 > An autonomous operations worker that turns natural language business objectives into verified, audited multi-step actions across enterprise ERP systems and internal tools.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-web--two--brown--55.vercel.app-blueviolet.svg?style=flat&logo=vercel)](https://web-two-brown-55.vercel.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-autonomous--enterprise--operations--worker.vercel.app-blueviolet.svg?style=flat&logo=vercel)](https://autonomous-enterprise-operations-worker.vercel.app)
 [![Test Suite](https://img.shields.io/badge/pytest%20%2B%20playwright-29%2F29%20passed-brightgreen.svg)](tests/)
 [![Python](https://img.shields.io/badge/python-3.11-blue.svg)](apps/api)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110-teal.svg)](apps/api)
@@ -14,7 +14,7 @@
 
 ## Overview
 
-🌐 **Live Console URL:** [https://web-two-brown-55.vercel.app](https://web-two-brown-55.vercel.app)
+🌐 **Live Console URL:** [https://autonomous-enterprise-operations-worker.vercel.app](https://autonomous-enterprise-operations-worker.vercel.app)
 
 I designed and built this system to solve a fundamental reliability problem with LLM agents in enterprise environments. Most agent implementations today are optimistic chatbots: they generate conversational output, make unverified API calls, fail on transient network hiccups, and provide zero guarantee that the target database actually persisted the requested record.
 
