@@ -74,6 +74,7 @@ export const AutonomousWorkerTab: React.FC = () => {
   const [simulateFault, setSimulateFault] = useState<boolean>(false);
   const [useBrowser, setUseBrowser] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
+  const [approving, setApproving] = useState<boolean>(false);
   const [taskResult, setTaskResult] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [useCustomData, setUseCustomData] = useState<boolean>(false);
