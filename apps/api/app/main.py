@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    description="Enterprise Agent Trust & Evaluation Platform - Independently built Amazon-inspired agent reliability sandbox.",
+    description="Autonomous Enterprise Operations Worker — Multi-step planning, policy enforcement, self-healing retries, and independent verification.",
     openapi_url="/api/v1/openapi.json",
     docs_url="/docs",
     redoc_url="/redoc",
